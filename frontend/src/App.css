@@ -1,0 +1,88 @@
+.App {
+  text-align: center;
+}
+
+.proper-case {
+  text-transform: capitalize;
+}
+
+.furniture-image {
+  width: 250px;
+  height: auto;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+.image-upload-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 85px;
+  height: 85px;
+  border-radius: 5px;
+  border: 2px solid black;
+  /* padding: 5px; */
+  margin: 5px;
+  /* box-shadow: 5px 5px 2px #888888; */
+  position: relative;
+}
+
+.remove-from-upload {
+  position: absolute;
+  background: red;
+  border-radius: 50%;
+  border: 2px solid black;
+  width: 20px;
+  height: 20px;
+  font-size: 9px;
+  padding: 0px 0px;
+  color: white;
+  top: -7px;
+  right: -7px;
+  overflow: auto;
+}
+
+.image-upload {
+  width: 75px;
+  height: auto;
+}
+
+.selected-images {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+}
