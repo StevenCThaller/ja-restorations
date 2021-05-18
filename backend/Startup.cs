@@ -17,12 +17,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using backend.Models;
 using backend.Services;
+using Microsoft.AspNetCore.Identity;
 
 
 namespace backend
 {
     public class Startup
     {
+        private string[] roles = new[] { "User", "Employee", "Administrator" };
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -30,6 +32,17 @@ namespace backend
 
         public IConfiguration Configuration { get; }
 
+        private async Task InitializeRoles(RoleManager<IdentityRole> roleManager)
+        {
+            foreach(var role in roles)
+            {
+                if(!await roleManager.RoleExistsAsync(role))
+                {
+                    var newRole = new IdentityRole(role);
+                    await roleManager.CreateAsync(newRole);
+                }
+            }
+        }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {

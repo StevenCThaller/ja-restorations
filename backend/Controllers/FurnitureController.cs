@@ -44,7 +44,7 @@ namespace backend.Controllers
             _context = context;
         }
 
-        [HttpGet("all")]        
+        [HttpGet("")]        
         public JsonResult GetFurniture()
         {
             IEnumerable<Furniture> allFurniture = _context.Furniture
@@ -56,17 +56,26 @@ namespace backend.Controllers
             return Json(new { message = "success", data = allFurniture });
         }
 
-        [HttpPost]
-        [Route("create")]
+        [HttpPost("")]
         public JsonResult CreateFurniture(NewFurnitureForm furnitureForm)
         {
             if(ModelState.IsValid)
             {
+                FurnitureType existingType = _context.FurnitureTypes.FirstOrDefault(t => t.name.ToLower() == furnitureForm.type.ToLower());
+                if(existingType == null)
+                {
+                    existingType = new FurnitureType()
+                    {
+                        name = furnitureForm.type.ToLower()
+                    };
+                    _context.Add(existingType);
+                }
+
                 Furniture furniture = new Furniture()
                 {
                     name = furnitureForm.name,
                     description = furnitureForm.description,
-                    typeId = furnitureForm.typeId,
+                    type = existingType,
                     priceFloor = furnitureForm.priceFloor,
                     priceCeiling = furnitureForm.priceCeiling,
                     height = furnitureForm.height,
@@ -112,40 +121,38 @@ namespace backend.Controllers
 
             return Json(new { message = "success", data = existing });
         }
-
         
-        
-        [HttpGet("type")]
+        [HttpGet("types")]
         public JsonResult GetTypes()
         {
             return Json(new { types = _context.FurnitureTypes }); 
         }
 
 
-        [HttpPost("type")]
-        public JsonResult AddType(TypeView typeView)
-        {
-            if(ModelState.IsValid)
-            {
-                FurnitureType type = _context.FurnitureTypes.FirstOrDefault(t => t.name == typeView.name.ToLower());
-                if(type == null)
-                {
-                    type = new FurnitureType()
-                    {
-                        name = typeView.name.ToLower()
-                    };
+        // [HttpPost("type")]
+        // public JsonResult AddType(TypeView typeView)
+        // {
+        //     if(ModelState.IsValid)
+        //     {
+        //         FurnitureType type = _context.FurnitureTypes.FirstOrDefault(t => t.name == typeView.name.ToLower());
+        //         if(type == null)
+        //         {
+        //             type = new FurnitureType()
+        //             {
+        //                 name = typeView.name.ToLower()
+        //             };
 
-                    _context.Add(type);
-                    _context.SaveChanges();                    
-                }
+        //             _context.Add(type);
+        //             _context.SaveChanges();                    
+        //         }
 
-                return Json(new { message = "success", data = type.typeId });
-            } else if(!ModelState.IsValid) {
-                return Json(new { message = "error", data = ModelState.Values });
-            } else {
-                return Json(new { message = "error", data = BadRequest() });
-            }
-        }
+        //         return Json(new { message = "success", data = type.typeId });
+        //     } else if(!ModelState.IsValid) {
+        //         return Json(new { message = "error", data = ModelState.Values });
+        //     } else {
+        //         return Json(new { message = "error", data = BadRequest() });
+        //     }
+        // }
         
         
     }

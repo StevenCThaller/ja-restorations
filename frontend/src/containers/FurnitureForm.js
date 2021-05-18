@@ -25,24 +25,14 @@ const FurnitureForm = props => {
     const [types, setTypes] = useState([]);
     const [displayImages, setDisplayImages] = useState([]);
     const [isPriceRange, setIsPriceRange] = useState(false);
-    // const [furniture, setFurniture] = useState({
-    //     name: '',
-    //     description: '',
-    //     type: '',
-    //     priceFloor: '',
-    //     priceCeiling: null,
-    //     width: '',
-    //     length: '', 
-    //     height: '',
-    //     estimatedWeight: ''
-    // })
+
 
     useEffect(() => {
         getTypes(setTypes);
     }, []);
 
     const getTypes = set => {
-        axios.get('http://localhost:5000/api/furniture/type')
+        axios.get('http://localhost:5000/api/furniture/types')
             .then(response => {
                 set(response.data.types)
             })
@@ -66,27 +56,22 @@ const FurnitureForm = props => {
         e.preventDefault();
         let formData = new FormData();
         for(let i = 0; i < images.length; i++) {
-            // console.log(images[i].name.hashUrlCode());
-            formData.append('fileNames', images[i].name/*.hashUrlCode()*/);
+            formData.append('fileNames', images[i].name.hashUrlCode());
             formData.append('formFiles', images[i]);
         }
 
         if(images.hasOwnProperty(0)) {
-            submitType()
-                .then(response => submitFurniture({ ...furniture, typeId: response.data.data }))
+            submitFurniture(furniture)
                 .then(response => submitImages(response.data.data, formData))
                 .catch(err => console.log(err));
         } else {
-            submitType()
-                .then(response => submitFurniture({ ...furniture, typeId: response.data.data }))
+            submitFurniture(furniture)
                 .catch(err => console.log(err));
             
         }
     }
 
-    const submitType = () => axios.post('http://localhost:5000/api/furniture/type', { name: furniture.type })
-
-    const submitFurniture = (body) => axios({ url: 'http://localhost:5000/api/furniture/create', method: 'POST', data: body })
+    const submitFurniture = (body) => axios({ url: 'http://localhost:5000/api/furniture', method: 'POST', data: body })
 
     const submitImages = (id, formData) => axios.post(`http://localhost:5000/api/images/furniture/${id}`, formData)
 

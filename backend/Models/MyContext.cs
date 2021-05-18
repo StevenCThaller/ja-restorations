@@ -7,6 +7,8 @@ namespace backend.Models
         public MyContext(DbContextOptions options) : base(options){}
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Administrator> Admins { get; set; }
+        public DbSet<Employee> Employees { get; set; }
         public DbSet<Furniture> Furniture { get; set; }
         public DbSet<FurnitureType> FurnitureTypes { get; set; }
         public DbSet<Sale> Sales { get; set; }

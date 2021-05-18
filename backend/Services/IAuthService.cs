@@ -28,8 +28,8 @@ namespace backend.Services
 
         private User FindUserOrAdd(Google.Apis.Auth.GoogleJsonWebSignature.Payload payload)
         {
-            var u = _context.Users.Where(u => u.email == payload.Email).FirstOrDefault();
-
+            var u = _context.Users.FirstOrDefault(u => u.email == payload.Email);
+            System.Console.WriteLine(payload.Email);
             if(u == null)
             {
                 u = new User()
@@ -41,6 +41,16 @@ namespace backend.Services
                     oauthIssuer = payload.Issuer,
                 };
                 _context.Add(u);
+
+                if(payload.Email == AppSettings.appSettings.SuperAdmin)
+                {
+                    Administrator admin = new Administrator()
+                    {
+                        user = u
+                    };
+                    _context.Add(admin);
+                }
+
                 _context.SaveChanges();
             }
 

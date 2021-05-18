@@ -14,7 +14,7 @@
 
 // namespace backend.Controllers
 // {
-//     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme )]
+//     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme )]
 //     [Route("api/[controller]")]
 //     public class UserController : Controller 
 //     {
@@ -27,12 +27,12 @@
 
 //         // [AllowAnonymous]
 //         [HttpGet("getdata")]
-//         public void GetData()
+//         public void GetData([FromHeader])
 //         {
 //             try
 //             {
 //                 string bearerToken;
-//                 Request.Headers.TryGetValue("Bearer", out bearerToken);
+                
 //                 // return RedirectToAction("Google", "Auth");
 //             }
 //             catch (Exception ex)

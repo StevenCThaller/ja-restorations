@@ -7,7 +7,7 @@ const Home = () => {
     const [furniture, setFurniture] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/furniture/all')
+        axios.get('http://localhost:5000/api/furniture')
             .then(response => setFurniture(response.data.data))
             .catch(err => console.log(err));
     }, [])

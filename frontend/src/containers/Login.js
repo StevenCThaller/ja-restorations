@@ -8,7 +8,7 @@ import { withRouter, Redirect } from 'react-router-dom';
 import axios from 'axios';
 
 const Login = props => {
-    const { login, auth, decryptToken } = props;
+    const { login, auth } = props;
 
     const onFailure = error => {
         alert(error);
@@ -32,14 +32,9 @@ const Login = props => {
         fetch(config.GOOGLE_AUTH_CALLBACK_URL, options)
             .then(response => response.json())
             .then(user => {
-                console.log(user);
                 const token = user.token;
                 login(token);
-                // decryptToken(token);
-                console.log(token);
-                return axios.get(`http://localhost:5000/api/user/getdata`, { headers: { "Authorization" : `Bearer ${token}` } })
             })
-            .then(uhh => console.log(uhh))
             .catch(err => console.log(err));
     }
 
@@ -79,9 +74,9 @@ const mapDispatchToProps = dispatch => {
         login: token => {
             dispatch(login(token));
         },
-        decryptToken: token => {
-            dispatch(decryptToken(token))
-        }
+        // decryptToken: token => {
+        //     dispatch(decryptToken(token))
+        // }
     }
 }
 
