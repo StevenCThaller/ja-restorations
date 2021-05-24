@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux';
 import { withRouter, NavLink } from 'react-router-dom';
-import { decryptEmail } from '../actions/userActions';
+import { useHistory } from 'react-router-dom';
+import NavLogo from '../../containers/NavLogo/NavLogo';
 const login = state => {
 
 }
 
 
 const TopNavigation = props => {
-    const { auth, user } = props;
+    const { auth } = props;
+    const history = useHistory();
+
     let loginText = "Log In";
     let loginLink = "/login";
     if(auth.isAuthenticated){
@@ -19,10 +22,8 @@ const TopNavigation = props => {
     return (
         <>
             <nav>
-                <div>
-                    <NavLink exact to="/">JA Restorations</NavLink>
-                    <p>Welcome, { auth.user }</p>
-                </div>
+                <NavLogo/>
+                
                 <div>
                     <ul>
                         <li><NavLink exact to="/">Home</NavLink></li>

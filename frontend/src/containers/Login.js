@@ -20,6 +20,8 @@ const Login = props => {
             return;
         }
 
+        console.log(response);
+
         const tokenBlob = new Blob([JSON.stringify({ tokenId: response.tokenId }, null, 2)], { type: 'application/json' });
         
         const options = {
@@ -32,6 +34,7 @@ const Login = props => {
         fetch(config.GOOGLE_AUTH_CALLBACK_URL, options)
             .then(response => response.json())
             .then(user => {
+                console.log(user);
                 const token = user.token;
                 login(token);
             })
