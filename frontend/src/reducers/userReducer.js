@@ -11,6 +11,7 @@ const userReducer = (user = {  email: '', firstName: '', lastName: '' }, action)
     switch(action.type) {
         case "user/decryptToken":
             const token = jwt.decode(action.payload);
+            console.log(token);
             let email = decrypt(token.sub, config.EMAIL_ENCRYPTION);
             let fName = decrypt(token.sub, config.JwtSecret);
             let lName = decrypt(token.sub, config.JwtSecret);

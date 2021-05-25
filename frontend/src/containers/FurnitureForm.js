@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import ImagesInput from '../components/ImagesInput';
 import axios from 'axios';
 import DataList from '../components/inputs/DataList';
-import { textHandler, numberHandler } from '../actions/furnitureFormActions';
+import { textHandler, numberHandler } from '../actions/furnitureActions';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 

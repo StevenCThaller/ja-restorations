@@ -18,7 +18,8 @@ using Microsoft.EntityFrameworkCore;
 using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Identity;
-
+using Google.Apis.Auth.AspNetCore3;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace backend
 {
@@ -56,7 +57,19 @@ namespace backend
                 });
             });
 
-            services.AddAuthentication()
+            services.AddAuthentication(o => 
+                {
+                    o.DefaultChallengeScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
+                    o.DefaultForbidScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
+                    o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                }
+                )
+                .AddCookie()
+                .AddGoogleOpenIdConnect(options => 
+                {
+                    options.ClientId = AppSettings.appSettings.GoogleClientId;
+                    options.ClientSecret = AppSettings.appSettings.GoogleClientSecret;
+                })
                 .AddJwtBearer(cfg => 
                 {
                     cfg.RequireHttpsMetadata = false;

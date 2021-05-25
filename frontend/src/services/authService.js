@@ -17,6 +17,24 @@ export const UserIsValid = token => {
     return false;
 }
 
+export const UserIsAdmin = token => {
+    if (token.isAdmin) {
+        let decodedToken = jwt.decode(token.user);
+        let dateNow = new Date();
+        return decodedToken.exp > dateNow.getTime() / 1000 ? true : false;
+    }
+    return false;
+}
+
+export const UserIsEmployee = token => {
+    if(token.isEmployee) {
+        let decodedToken = jwt.decode(token.user);
+        let dateNow = new Date();
+        return decodedToken.exp > dateNow.getTime() / 1000 ? true : false;
+    }
+    return false;
+}
+
 export const CookieIsValid = () => {
     const cookie = jwt.decode(localStorage.getItem('jatoken'));
     // if()

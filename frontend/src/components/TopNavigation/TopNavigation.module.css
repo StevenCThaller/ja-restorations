@@ -1,0 +1,32 @@
+#topNav {
+    background-color: #26252a;
+    display: flex;
+    height: 70px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 15px 5px 5px;
+    color: white;
+}
+.navCat {
+    margin-left: 25px;
+    font-size: 20px;
+}
+
+.navCat a {
+    text-decoration: none;
+    color: white;
+}
+
+.navRight {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 50%;
+}
+
+.navLeft {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 50%;
+}
