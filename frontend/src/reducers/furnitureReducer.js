@@ -9,7 +9,7 @@ const initialFurniture = {
     height: '',
     estimatedWeight: ''
 }
-const furnitureFormReducer = (furniture = initialFurniture, action) => {
+const furnitureReducer = (furniture = initialFurniture, action) => {
     const { type, payload } = action;
     switch(type) {
         case "furniture/text":
@@ -29,4 +29,4 @@ const furnitureFormReducer = (furniture = initialFurniture, action) => {
     }
 }
 
-export default furnitureFormReducer;
+export default furnitureReducer;
