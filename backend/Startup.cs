@@ -73,7 +73,7 @@ namespace backend
             services.AddDbContext<MyContext>(options => options.UseMySql(Configuration["DbInfo:ConnectionString"]));
             // services.AddDbContextFactory<MyContext>(options => options.UseMySql(Configuration["DbInfo:ConnectionString"]));
             services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
-            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IGoogleAuthService, GoogleAuthService>();
             
         }
 

@@ -1,16 +1,19 @@
-using backend.Models;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System;
 using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using backend.Models;
+using backend.Models.Auth;
+using Microsoft.AspNetCore.Http;
 
 namespace backend.Services
 {
     public interface IAuthService
     {
-        Task<User> Authenticate(Google.Apis.Auth.GoogleJsonWebSignature.Payload payload);
+        AuthResponse AuthenticateWithProvider(AuthProvider provider, IAuthRequest authRequest);
+        // AuthResponse AuthenticateWithFacebook(IAuthRequest model);
+        // AuthResponse AuthenticateWithTwitter(IAuthRequest model);
+        AuthResponse RefreshToken(string token);
+        bool RevokeToken(string token);
+        User GetById(int id);
     }
 
     public class AuthService : IAuthService
@@ -20,17 +23,76 @@ namespace backend.Services
         {
             _context = context;
         }
-        public async Task<User> Authenticate(Google.Apis.Auth.GoogleJsonWebSignature.Payload payload)
+        public async Task<AuthResponse> AuthenticateWithProvider(AuthProvider provider, IAuthRequest authReq)
+        {
+
+            switch (provider)
+            {
+                case AuthProvider.google:
+                    {
+                        Google.Apis.Auth.GoogleJsonWebSignature.Payload authResult = AuthenticateWithGoogle(authReq);
+                        break;
+                    }
+                // case AuthProvider.facebook:
+                // {
+                //     var authResult = AuthenticateWithFacebook(authReq);
+                //     break;
+                // }
+                // case AuthProvider.twitter:
+                // {
+                //     var authResult = AuthenticateWithTwitter(authReq);
+                //     break;
+                // }
+
+                default: return new AuthResponse() { JwtToken = "", RefreshToken = "" };
+            }
+            await Task.Delay(1);
+            // return this.FindUserOrAdd(payload);
+            var response = new AuthResponse();
+            return response;
+        }
+        private async Task<AuthResponse> AuthenticateWithGoogle(GoogleAuthRequest authReq)
         {
             await Task.Delay(1);
-            return this.FindUserOrAdd(payload);
+            // return this.FindUserOrAdd(payload);
+            var response = new AuthResponse();
+            return response;
         }
+        private async Task<AuthResponse> AuthenticateWithFacebook(FacebookAuthRequest authReq)
+        {
+            await Task.Delay(1);
+            //
+            var response = new AuthResponse();
+            return response;
 
-        private User FindUserOrAdd(Google.Apis.Auth.GoogleJsonWebSignature.Payload payload)
+        }
+        private async Task<AuthResponse> AuthenticateWithTwitter(TwitterAuthRequest authReq)
+        {
+            await Task.Delay(1);
+            //
+            var response = new AuthResponse();
+            return response;
+
+        }
+        public AuthResponse RefreshToken(string token)
+        {
+            var response = new AuthResponse();
+            return response;
+        }
+        public bool RevokeToken(string token)
+        {
+            return true;
+        }
+        public User GetById(int id)
+        {
+            User u = _context.Users.Find(id);
+            return u;
+        }
+        private User FindOrAdd(Google.Apis.Auth.GoogleJsonWebSignature.Payload payload)
         {
             var u = _context.Users.FirstOrDefault(u => u.email == payload.Email);
             System.Console.WriteLine(payload.Email);
-            if(u == null)
+            if (u == null)
             {
                 u = new User()
                 {
@@ -42,7 +104,7 @@ namespace backend.Services
                 };
                 _context.Add(u);
 
-                if(payload.Email == AppSettings.appSettings.SuperAdmin)
+                if (payload.Email == AppSettings.appSettings.SuperAdmin)
                 {
                     Administrator admin = new Administrator()
                     {
@@ -57,4 +119,5 @@ namespace backend.Services
             return u;
         }
     }
+
 }

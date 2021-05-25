@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using backend.Models;
+using backend.Models.Auth;
 using backend.Helpers;
 using backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -14,15 +15,14 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-
 namespace backend.Controllers
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class AuthController : Controller 
     {
-        private IAuthService _authService;
-        public AuthController(IAuthService authService)
+        private IGoogleAuthService _authService;
+        public AuthController(IGoogleAuthService authService)
         {
             _authService = authService;
         }
@@ -34,12 +34,12 @@ namespace backend.Controllers
 
         [AllowAnonymous]
         [HttpPost("google")]
-        public async Task<IActionResult> Google([FromBody]UserView userView)
+        public async Task<IActionResult> GoogleLoginOrRegister([FromBody]GoogleLogin gLogin)
         {
             try 
             {
-                System.Console.WriteLine("userView = " + userView.tokenId);
-                var payload = GoogleJsonWebSignature.ValidateAsync(userView.tokenId, new GoogleJsonWebSignature.ValidationSettings()).Result;
+                System.Console.WriteLine("userView = " + gLogin.tokenId);
+                var payload = GoogleJsonWebSignature.ValidateAsync(gLogin.tokenId, new GoogleJsonWebSignature.ValidationSettings()).Result;
                 var user = await _authService.Authenticate(payload);
                 // System.Console.WriteLine(user);
                 var claims = new[]

@@ -1,9 +1,7 @@
-*/appsettings.json
-*/config.json
-*/wwwroot/s3
-*/.vscode
-*/Migrations/*
-*/Migrations
+appsettings.json*
+config.json*
+wwwroot/s3
+Migrations
 .vscode
 # Created by https://www.toptal.com/developers/gitignore/api/aspnetcore,react
 # Edit at https://www.toptal.com/developers/gitignore?templates=aspnetcore,react

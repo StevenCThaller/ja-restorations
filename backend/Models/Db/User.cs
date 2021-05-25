@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using backend.Models.Auth;
 
 namespace backend.Models
 {
@@ -14,15 +16,7 @@ namespace backend.Models
         public string oauthIssuer { get; set; }
         public DateTime createdAt { get; set; } = DateTime.Now;
         public DateTime updatedAt { get; set; } = DateTime.Now;
+        public List<RefreshToken> RefreshTokens {get; set;}
     }
 
-    public class UserView
-    {
-        public string tokenId { get; set; }
-    }
-
-    public class SubToken
-    {
-        public string token { get; set; }
-    }
 }

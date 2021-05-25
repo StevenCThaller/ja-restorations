@@ -1,3 +1,4 @@
+using backend.Models.Auth;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Models
@@ -18,6 +19,7 @@ namespace backend.Models
         public DbSet<AppraisalImage> AppraisalImages { get; set; }
         public DbSet<Appraisal> Appraisals { get; set; }
         public DbSet<FurnitureHasColor> FurnitureHasColors { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
         
     }
 }

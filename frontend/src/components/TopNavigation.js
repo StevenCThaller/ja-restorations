@@ -24,10 +24,8 @@ const TopNavigation = props => {
                     <p>Welcome, { auth.user }</p>
                 </div>
                 <div>
-                    <ul>
-                        <li><NavLink exact to="/">Home</NavLink></li>
-                        <li><NavLink exact to={loginLink}>{loginText}</NavLink></li>
-                    </ul>
+                        <p><NavLink exact to="/">Home</NavLink></p>
+                        <p><NavLink exact to={loginLink}>{loginText}</NavLink></p>
                 </div>
             </nav>
         </>
