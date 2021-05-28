@@ -18,7 +18,11 @@ using Microsoft.EntityFrameworkCore;
 using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Identity;
-
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Google;
+using backend.Helpers;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 
 namespace backend
 {
@@ -56,24 +60,61 @@ namespace backend
                 });
             });
 
+            // services.AddAuthentication()
+            //     .AddGoogle(options => 
+            //     {
+            //         options.ClientId = AppSettings.appSettings.GoogleClientId;
+            //         options.ClientSecret = AppSettings.appSettings.GoogleClientSecret;
+            //     });
+            // Not sure if these can chain off each other?
             services.AddAuthentication()
-                .AddJwtBearer(cfg => 
+                .AddJwtBearer(options => 
                 {
-                    cfg.RequireHttpsMetadata = false;
-                    cfg.SaveToken = true;
+                    options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
 
-                    cfg.TokenValidationParameters = new TokenValidationParameters()
+                    options.TokenValidationParameters = new TokenValidationParameters()
                     {
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["AppSettings:JwtSecret"])),
                         ValidateIssuer = false,
-                        ValidateAudience = false
+                        ValidateAudience = false,
+                        ClockSkew = TimeSpan.Zero
+                    };
+
+                    options.Events = new JwtBearerEvents 
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            context.Token = context.Request.Cookies["jacolateChip"];
+                            return Task.CompletedTask;
+                        }
                     };
                 });
+
+
             services.AddDbContext<MyContext>(options => options.UseMySql(Configuration["DbInfo:ConnectionString"]));
             // services.AddDbContextFactory<MyContext>(options => options.UseMySql(Configuration["DbInfo:ConnectionString"]));
             services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            // services.AddAuthorization(options => 
+            // {
+            //     options.AddPolicy("AdminOnly",policy => policy.AddRequirements(new IsAdminRequirement()));
+            //     options.AddPolicy("EmployeeOnly", policy => policy.AddRequirements(new IsEmployeeRequirement()));
+            //     options.AddPolicy("UserOnly", policy => policy.AddRequirements(new IsUserRequirement()));
+            // })
+            // .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            // .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
+            //     options => {
+            //         options.AccessDeniedPath = new PathString("/api/auth/denied");
+            //     });
+
+            // services.AddSingleton<IAuthorizationHandler, IsAdminAuthorizationHandler>();
+            // services.AddSingleton<IAuthorizationHandler, IsEmployeeAuthorizationHandler>();
+            // services.AddSingleton<IAuthorizationHandler, IsUserAuthorizationHandler>();
+
             services.AddScoped<IGoogleAuthService, GoogleAuthService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IUserService, UserService>();
             
         }
 

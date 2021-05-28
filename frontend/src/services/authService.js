@@ -8,12 +8,20 @@
 import jwt from 'jsonwebtoken';
 
 export const UserIsValid = token => {
-    console.log("the token is " + token.user);
     if (token.isAuthenticated) {
         let decodedToken = jwt.decode(token.user);
         let dateNow = new Date();
         return decodedToken.exp > dateNow.getTime() / 1000 ? true: false;
     } 
+    return false;
+}
+
+export const UserIsEmployee = token => {
+    if (token.roleId > 1){
+        let decodedToken = jwt.decode(token.user);
+        let dateNow = new Date();
+        return decodedToken.exp > dateNow.getTime() / 1000 ? true : false;
+    }
     return false;
 }
 

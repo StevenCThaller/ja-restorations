@@ -14,6 +14,7 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 
 namespace backend.Controllers
 {
@@ -22,9 +23,11 @@ namespace backend.Controllers
     public class AuthController : Controller 
     {
         private IGoogleAuthService _authService;
-        public AuthController(IGoogleAuthService authService)
+        // private IUserService _userService;
+        public AuthController(IGoogleAuthService authService /*, IUserService userService*/)
         {
             _authService = authService;
+            // _userService = userService;
         }
 
         // public AuthController(IAuthService authService)
@@ -40,12 +43,16 @@ namespace backend.Controllers
             {
                 System.Console.WriteLine("userView = " + gLogin.tokenId);
                 var payload = GoogleJsonWebSignature.ValidateAsync(gLogin.tokenId, new GoogleJsonWebSignature.ValidationSettings()).Result;
-                var user = await _authService.Authenticate(payload);
+                AuthResponse response = await _authService.Authenticate(payload, ipAddress());
                 // System.Console.WriteLine(user);
-                var claims = new[]
+                // string role;
+                // if()
+
+                var claims = new List<Claim>
                 {
-                    new Claim(JwtRegisteredClaimNames.Sub, Security.Encrypt(AppSettings.appSettings.JwtEmailEncryption, user.email)),
+                    new Claim(JwtRegisteredClaimNames.Sub, Security.Encrypt(AppSettings.appSettings.JwtEmailEncryption, response.email)),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim("Role", response.roleId.ToString())
                 };
 
                 var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(AppSettings.appSettings.JwtSecret));
@@ -68,6 +75,32 @@ namespace backend.Controllers
                 BadRequest(ex.Message);
             }
             return BadRequest();
+        }
+
+        [AllowAnonymous]
+        [HttpGet("denied")]
+        public async Task<IActionResult> Denied()
+        {
+            await Task.Delay(0);
+            return Json(new { message = "denied", results = "Not authorized" });
+        }
+
+        private void setTokenCookie(string token)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = DateTime.UtcNow.AddDays(7)
+            };
+            Response.Cookies.Append("refreshToken", token, cookieOptions);
+        }
+
+        private string ipAddress()
+        {
+            if (Request.Headers.ContainsKey("X-Forwarded-For"))
+                return Request.Headers["X-Forwarded-For"];
+            else
+                return HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
         }
     }
 }

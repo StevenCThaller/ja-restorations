@@ -21,7 +21,7 @@ const TopNavigation = props => {
             <nav>
                 <div>
                     <NavLink exact to="/">JA Restorations</NavLink>
-                    <p>Welcome, { auth.user }</p>
+                    <p>Welcome, { user.email }</p>
                 </div>
                 <div>
                         <p><NavLink exact to="/">Home</NavLink></p>

@@ -1,13 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import { withRouter } from 'react-router';
+import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import jwt from 'jsonwebtoken';
 
-const Home = () => {
+const Home = props => {
     const [furniture, setFurniture] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/furniture')
+        let token = jwt.decode(props.auth.user);
+        console.log(token);
+        axios.get('http://localhost:5000/api/furniture', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+        )
             .then(response => setFurniture(response.data.data))
             .catch(err => console.log(err));
     }, [])
@@ -16,6 +25,7 @@ const Home = () => {
 
     return (
         <div>
+            <NavLink to="/addfurniture">Furniture</NavLink>
             {
                 furniture.map((item, i) => 
                     <div key={i}>

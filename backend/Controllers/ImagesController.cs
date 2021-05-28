@@ -22,7 +22,7 @@ using Amazon.S3.Transfer;
 
 namespace backend.Controllers
 {
-    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme )]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme )]
     [ApiController]
     [Route("api/[controller]")]
     public class ImagesController : Controller 
@@ -62,10 +62,10 @@ namespace backend.Controllers
         }
 
 
-        
         [HttpPost("furniture/{furnitureId}")]
         public JsonResult UploadImages(int furnitureId, [FromForm] FileModel files)
         {
+            
             Furniture existing = _context.Furniture.FirstOrDefault(f => f.furnitureId == furnitureId);
             if(existing == null) {
                 return Json(new { message = "error", error = "That furniture does not exist." });

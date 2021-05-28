@@ -6,3 +6,12 @@ export const decryptToken = token => {
         })
     }
 }
+
+export const setUser = user => {
+    return dispatch => {
+        dispatch({
+            type: "user/set",
+            payload: user
+        })
+    }
+}

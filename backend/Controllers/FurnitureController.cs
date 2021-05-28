@@ -20,17 +20,18 @@ using System.Web;
 using Amazon;
 using Amazon.S3;
 using Amazon.S3.Transfer;
+using backend.Helpers;
 
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
 {
-    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme )]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme )]
     [ApiController]
     [Route("api/[controller]")]
     public class FurnitureController : Controller 
     {
-        // private IAuthService _authService;
+        private IAuthService _authService;
 
         // public FurnitureController(IAuthService authService)
         // {
@@ -39,11 +40,13 @@ namespace backend.Controllers
 
         private MyContext _context;
 
-        public FurnitureController(MyContext context)
+        public FurnitureController(MyContext context, IAuthService authService)
         {
+            _authService = authService;
             _context = context;
         }
 
+        [AllowAnonymous]
         [HttpGet("")]        
         public JsonResult GetFurniture()
         {
@@ -57,38 +60,50 @@ namespace backend.Controllers
         }
 
         [HttpPost("")]
-        public JsonResult CreateFurniture(NewFurnitureForm furnitureForm)
+        public async Task<IActionResult> CreateFurniture(NewFurnitureForm furnitureForm)
         {
-            if(ModelState.IsValid)
+            try
             {
-                FurnitureType existingType = _context.FurnitureTypes.FirstOrDefault(t => t.name.ToLower() == furnitureForm.type.ToLower());
-                if(existingType == null)
+                if(!await _authService.AuthorizeByHeaders(Request, 2))
                 {
-                    existingType = new FurnitureType()
-                    {
-                        name = furnitureForm.type.ToLower()
-                    };
-                    _context.Add(existingType);
+                    return Unauthorized(Json(new { message = "unauthorized", results = "You are unauthorized to access this resource"}));
                 }
 
-                Furniture furniture = new Furniture()
+                if(ModelState.IsValid)
                 {
-                    name = furnitureForm.name,
-                    description = furnitureForm.description,
-                    type = existingType,
-                    priceFloor = furnitureForm.priceFloor,
-                    priceCeiling = furnitureForm.priceCeiling,
-                    height = furnitureForm.height,
-                    length = furnitureForm.length,
-                    width = furnitureForm.width,
-                    estimatedWeight = furnitureForm.estimatedWeight
-                };
+                    FurnitureType existingType = _context.FurnitureTypes.FirstOrDefault(t => t.name.ToLower() == furnitureForm.type.ToLower());
+                    if(existingType == null)
+                    {
+                        existingType = new FurnitureType()
+                        {
+                            name = furnitureForm.type.ToLower()
+                        };
+                        _context.Add(existingType);
+                    }
 
-                _context.Add(furniture);                
-                _context.SaveChanges();
-                return Json(new { message = "success", data = furniture.furnitureId });
-            } else {
-                return Json(new { message = "error", data = ModelState.Values });
+                    Furniture furniture = new Furniture()
+                    {
+                        name = furnitureForm.name,
+                        description = furnitureForm.description,
+                        type = existingType,
+                        priceFloor = furnitureForm.priceFloor,
+                        priceCeiling = furnitureForm.priceCeiling,
+                        height = furnitureForm.height,
+                        length = furnitureForm.length,
+                        width = furnitureForm.width,
+                        estimatedWeight = furnitureForm.estimatedWeight
+                    };
+
+                    _context.Add(furniture);                
+                    _context.SaveChanges();
+                    return Ok(Json(new { message = "success", results = furniture.furnitureId }));
+                } else {
+                    return BadRequest(Json(new { message = "error", results = ModelState.Values }));
+                }
+            }
+            catch(Exception ex) 
+            {
+                return BadRequest(Json(new { message = "error", results = ex.Message }));
             }
         }
 
@@ -122,6 +137,7 @@ namespace backend.Controllers
             return Json(new { message = "success", data = existing });
         }
         
+        [AllowAnonymous]
         [HttpGet("types")]
         public JsonResult GetTypes()
         {

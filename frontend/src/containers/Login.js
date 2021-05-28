@@ -2,13 +2,13 @@ import React, { useEffect } from 'react'
 import { GoogleLogin } from 'react-google-login';
 import { connect } from 'react-redux';
 import { login } from '../actions/authActions';
-import { decryptToken } from '../actions/userActions';
+import { setUser } from '../actions/userActions';
 import config from '../config.json';
 import { withRouter, Redirect } from 'react-router-dom';
 import axios from 'axios';
 
 const Login = props => {
-    const { login, auth } = props;
+    const { login, auth, user, setUser } = props;
 
     const onFailure = error => {
         alert(error);
@@ -35,6 +35,12 @@ const Login = props => {
             .then(user => {
                 const token = user.token;
                 login(token);
+                return token;
+            })
+            .then(token => axios.get('http://localhost:5000/api/users/3', { headers: { Authorization: `Bearer ${token}` } }))
+            .then(user => {
+                console.log(user);
+                setUser(user.data.value.results)
             })
             .catch(err => console.log(err));
     }
@@ -80,9 +86,9 @@ const mapDispatchToProps = dispatch => {
         login: token => {
             dispatch(login(token));
         },
-        // decryptToken: token => {
-        //     dispatch(decryptToken(token))
-        // }
+        setUser: token => {
+            dispatch(setUser(token))
+        }
     }
 }
 

@@ -17,6 +17,10 @@ const userReducer = (user = {  email: '', firstName: '', lastName: '' }, action)
             user = { ...user, email: email, firstName: fName, lastName: lName };
             console.log({ email, fName, lName });
             break;
+        case "user/set":
+            // const { email: uEmail, firstName: uFName, lastName: uLName } = action.payload;
+            user = { ...user, ...action.payload }
+            break;
         default:
             break;
     };

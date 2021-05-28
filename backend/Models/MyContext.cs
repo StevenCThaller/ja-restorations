@@ -8,8 +8,7 @@ namespace backend.Models
         public MyContext(DbContextOptions options) : base(options){}
 
         public DbSet<User> Users { get; set; }
-        public DbSet<Administrator> Admins { get; set; }
-        public DbSet<Employee> Employees { get; set; }
+        public DbSet<Role> Roles { get; set; }
         public DbSet<Furniture> Furniture { get; set; }
         public DbSet<FurnitureType> FurnitureTypes { get; set; }
         public DbSet<Sale> Sales { get; set; }
@@ -20,6 +19,22 @@ namespace backend.Models
         public DbSet<Appraisal> Appraisals { get; set; }
         public DbSet<FurnitureHasColor> FurnitureHasColors { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
-        
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Role>()
+                        .HasData(
+                            new Role { roleId = 1, role = "Basic" },
+                            new Role { roleId = 2, role = "Employee" },
+                            new Role { roleId = 3, role = "Administrator" }
+                        );
+            
+            modelBuilder.Entity<FurnitureType>()
+                        .HasData(
+                            new FurnitureType { typeId = 1, name = "nighstand" },
+                            new FurnitureType { typeId = 2, name = "coffee table" },
+                            new FurnitureType { typeId = 3, name = "dresser" }
+                        );
+        }
     }
+
 }

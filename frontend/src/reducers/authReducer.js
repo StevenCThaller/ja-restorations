@@ -7,7 +7,7 @@ const authReducer = (auth = { user: '', isAuthenticated: false }, action) => {
             setCookie(action.payload);
             break;
         case "auth/logout": 
-            auth = { ...auth, user: '', isAuthenticated: false, email: '' };
+            auth = { ...auth, user: '', isAuthenticated: false };
             deleteCookie();
             break;
         default:

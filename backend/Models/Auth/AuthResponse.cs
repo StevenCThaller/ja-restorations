@@ -1,13 +1,23 @@
 using Newtonsoft.Json;
 
-namespace backend.Models.Auth
+namespace backend.Models
 {
     public class AuthResponse
     {
-        public string JwtToken {get; set;}
+        public string email { get; set; }
+        public int roleId { get; set; }
+        public string jwtToken {get; set;}
 
         [JsonIgnore] // not adding to response body, will put in http only cookie later
-        public string RefreshToken {get; set;}
+        public string refreshToken {get; set;}
+
+        public AuthResponse(User user, string jwtToken, string refreshToken)
+        {
+            email = user.email;
+            roleId = user.roleId;
+            this.jwtToken = jwtToken;
+            this.refreshToken = refreshToken;
+        }
         // can add other fields
         // public int UserId {get; set;}
 
