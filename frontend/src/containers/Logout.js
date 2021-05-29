@@ -2,12 +2,13 @@ import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { withRouter, Redirect } from 'react-router-dom';
 import { logout } from '../actions/authActions';
+import { clearUser } from '../actions/userActions';
 
 const Logout = props => {
-    const { auth, logout } = props;
+    const { auth, logout, clearUser } = props;
     useEffect(() => {
         logout();
-        
+        clearUser();
     }, [auth])
     return (
         <div>
@@ -24,7 +25,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        logout: () => dispatch(logout())
+        logout: () => dispatch(logout()),
+        clearUser: () => dispatch(clearUser())
     };
 }
 

@@ -15,3 +15,12 @@ export const setUser = user => {
         })
     }
 }
+
+export const clearUser = () => {
+    return dispatch => {
+        dispatch({
+            type: "user/clear",
+            payload: ""
+        })
+    }
+}

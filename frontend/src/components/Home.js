@@ -4,6 +4,8 @@ import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
+import MainHeader from '../containers/MainHeader/MainHeader';
+import DeleteFurniture from '../containers/DeleteFurniture';
 
 const Home = props => {
     const [furniture, setFurniture] = useState([]);
@@ -21,12 +23,16 @@ const Home = props => {
             .catch(err => console.log(err));
     }, [])
 
+    const deleteFromDom = id => {
+        setFurniture(furniture.filter(f => f.furnitureId !== id));
+    }
     
 
     return (
         <div>
             <NavLink to="/addfurniture">Furniture</NavLink>
-            {
+            <MainHeader/>
+            {/* {
                 furniture.map((item, i) => 
                     <div key={i}>
                         <h4>{item.name}</h4>
@@ -36,9 +42,10 @@ const Home = props => {
                         {
                             item.images.map((img, j) => <img className="furniture-image" key={j} src={img.url} />)
                         }
+                        <DeleteFurniture id={item.furnitureId} deleteFromDom={deleteFromDom}/>
                     </div>
                 )
-            }
+            } */}
         </div>
     )
 }

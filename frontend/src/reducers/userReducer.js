@@ -7,20 +7,29 @@ const decrypt = (value, hash) => {
     return TripleDES.decrypt(value, MD5(hash), { mode: mode.ECB, padding: pad.Pkcs7 }).toString(enc.Utf8);
 }
 
-const userReducer = (user = {  email: '', firstName: '', lastName: '' }, action) => {
+const initialUser = {
+    email: '',
+    firstName: '', 
+    lastName: '',
+    role: ''
+}
+
+const userReducer = (user = initialUser, action) => {
     switch(action.type) {
         case "user/decryptToken":
             const token = jwt.decode(action.payload);
             console.log(token);
-            let email = decrypt(token.sub, config.EMAIL_ENCRYPTION);
-            let fName = decrypt(token.sub, config.JwtSecret);
-            let lName = decrypt(token.sub, config.JwtSecret);
-            user = { ...user, email: email, firstName: fName, lastName: lName };
-            console.log({ email, fName, lName });
+            let tEmail = decrypt(token.sub, config.EMAIL_ENCRYPTION);
+            let tFName = decrypt(token.sub, config.JwtSecret);
+            let tLName = decrypt(token.sub, config.JwtSecret);
+            user = { ...user, email: tEmail, firstName: tFName, lastName: tLName };
             break;
         case "user/set":
-            // const { email: uEmail, firstName: uFName, lastName: uLName } = action.payload;
-            user = { ...user, ...action.payload }
+            const { email, firstName, lastName, roleId } = action.payload;
+            user = { ...user, email, firstName, lastName, role: roleId }
+            break;
+        case "user/clear":
+            user = initialUser;
             break;
         default:
             break;

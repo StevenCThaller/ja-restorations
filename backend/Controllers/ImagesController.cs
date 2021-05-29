@@ -33,12 +33,13 @@ namespace backend.Controllers
         // {
         //     _authService = authService;
         // }
-
+        private IImageService _imageService;
         private MyContext _context;
         private IAmazonS3 client; 
-        public ImagesController(MyContext context)
+        public ImagesController(MyContext context, IImageService imageService)
         {
             _context = context;
+            _imageService = imageService;
             client = new AmazonS3Client(AppSettings.appSettings.AWSAccessKey, AppSettings.appSettings.AWSSecretKey, RegionEndpoint.USEast2);
         }
 
@@ -60,6 +61,22 @@ namespace backend.Controllers
             
             return Json(new { message = "success", data = existing });
         }
+
+        [AllowAnonymous]
+        [HttpGet("furniture/{count}")]
+        public async Task<IActionResult> GetMultipleFurnitureImages(int count)
+        {
+            try
+            {
+                IEnumerable<S3Image> imageUrls = await _imageService.GetXMostRecentFurnitureImages(count);
+                return Ok(Json(new { message = "success", results = imageUrls }));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(Json(new { message = "error", results = ex.Message }));
+            }
+        }
+
 
 
         [HttpPost("furniture/{furnitureId}")]

@@ -6,6 +6,7 @@ import TopNavigation from './components/TopNavigation/TopNavigation';
 import Home from './components/Home';
 import { connect } from 'react-redux';
 import FurnitureForm from './containers/FurnitureForm';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 const App = props => {

@@ -42,7 +42,7 @@ const Login = props => {
             })
             .then(token => axios.get('http://localhost:5000/api/users/3', { headers: { Authorization: `Bearer ${token}` } }))
             .then(user => {
-                console.log(user);
+                console.log(user.data.value.results);
                 setUser(user.data.value.results)
             })
             .catch(err => console.log(err));

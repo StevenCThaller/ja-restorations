@@ -107,7 +107,7 @@ namespace backend.Controllers
             }
         }
 
-        [HttpDelete("{furnitureId}")]
+        [HttpDelete("{furnitureId}/delete")]
         public async Task<JsonResult> DeleteFurniture(int furnitureId)
         {
             await Task.Delay(1);

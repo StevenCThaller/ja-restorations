@@ -114,6 +114,7 @@ namespace backend
 
             services.AddScoped<IGoogleAuthService, GoogleAuthService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IUserService, UserService>();
             
         }

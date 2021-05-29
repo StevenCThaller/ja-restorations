@@ -5,6 +5,7 @@ import DataList from '../components/inputs/DataList';
 import { textHandler, numberHandler } from '../actions/furnitureActions';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 String.prototype.hashUrlCode = function() {
     var hash = 0, i, chr;
@@ -24,7 +25,7 @@ const FurnitureForm = props => {
     const [types, setTypes] = useState([]);
     const [displayImages, setDisplayImages] = useState([]);
     const [isPriceRange, setIsPriceRange] = useState(false);
-
+    const history = useHistory();
 
     useEffect(() => {
         getTypes(setTypes);
@@ -65,9 +66,11 @@ const FurnitureForm = props => {
                     console.log(response);
                     return submitImages(response.data.value.results, formData, { headers: { Authorization: `Bearer ${auth.user}`} })
                 })
+                .then(response => history.push('/'))
                 .catch(err => console.log(err));
         } else {
             submitFurniture(furniture, { Authorization: `Bearer ${auth.user}`})
+                .then(response => history.push('/'))
                 .catch(err => console.log(err));
             
         }
@@ -130,7 +133,7 @@ const mapStateToProps = state => {
         types: state.types,
         displayImages: state.displayImages,
         isPriceRange: state.isPriceRange,
-        furniture: state.furnForm
+        furniture: state.furn
     }
 }
 

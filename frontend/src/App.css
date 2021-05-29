@@ -87,3 +87,8 @@
   justify-content: left;
 }
 
+.carousel-image {
+  height: 450px;
+  width: auto;
+  margin: auto;
+}

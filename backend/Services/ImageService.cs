@@ -7,12 +7,38 @@ using Amazon.S3.Model;
 // using Amazon.S3.Transfer;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services
 {
-    public class ImageService
+    public interface IImageService
     {
-        
+        Task<IEnumerable<S3Image>> GetAllImages();
+        Task<IEnumerable<S3Image>> GetXMostRecentFurnitureImages(int count);
+    }
+    public class ImageService : IImageService
+    {
+        private MyContext _context;
+
+        public ImageService(MyContext context) 
+        {
+            _context = context;
+        }
+        public async Task<IEnumerable<S3Image>> GetAllImages()
+        {
+            await Task.Delay(0);
+            return _context.Images;
+        }
+        public async Task<IEnumerable<S3Image>> GetXMostRecentFurnitureImages(int count)
+        {
+            await Task.Delay(0);
+            return _context.Furniture
+                .Include(f => f.images)
+                .ThenInclude(i => i.s3Image)
+                .OrderByDescending(f => f.createdAt)
+                .Take(count)
+                .Select(f => f.images.First().s3Image);
+        }
         public async static void DeleteImages(IEnumerable<S3Image> images)
         {
 
