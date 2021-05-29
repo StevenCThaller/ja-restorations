@@ -4,12 +4,13 @@ import { NavLink, withRouter } from 'react-router-dom';
 import { navCat } from './TopNavigation/TopNavigation.module.css';
 
 const UserStatus = props => {
-    const { auth } = props;
+    const { auth, user } = props;
 
+    console.log(user)
     let loginText = "Sign In";
     let loginLink = "/login";
     if(auth.isAuthenticated){
-        loginText = "username";
+        loginText = user.email;
         loginLink = "/logout";
     }
     return (

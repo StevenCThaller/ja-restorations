@@ -8,7 +8,10 @@ import MainHeader from '../containers/MainHeader/MainHeader';
 import DeleteFurniture from '../containers/DeleteFurniture';
 
 const Home = props => {
+    const { user } = props;
     const [furniture, setFurniture] = useState([]);
+
+    console.log(user);
 
     useEffect(() => {
         let token = jwt.decode(props.auth.user);
@@ -23,36 +26,20 @@ const Home = props => {
             .catch(err => console.log(err));
     }, [])
 
-    const deleteFromDom = id => {
-        setFurniture(furniture.filter(f => f.furnitureId !== id));
-    }
-    
 
     return (
         <div>
             <NavLink to="/addfurniture">Furniture</NavLink>
             <MainHeader/>
-            {/* {
-                furniture.map((item, i) => 
-                    <div key={i}>
-                        <h4>{item.name}</h4>
-                        <p>{item.description}</p>
-                        <p>Dimensions (LxWxH): {item.length} x {item.width} x {item.height}</p>
-                        <p>Price{item.priceCeiling ? ` range: \$${item.priceFloor} - \$${item.priceCeiling}`: `: \$${item.priceFloor}` } </p>
-                        {
-                            item.images.map((img, j) => <img className="furniture-image" key={j} src={img.url} />)
-                        }
-                        <DeleteFurniture id={item.furnitureId} deleteFromDom={deleteFromDom}/>
-                    </div>
-                )
-            } */}
+            
         </div>
     )
 }
 
 const mapStateToProps = state => {
     return { 
-        auth: state.auth
+        auth: state.auth,
+        user: state.user
     }
 }
 

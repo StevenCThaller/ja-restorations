@@ -52,7 +52,8 @@ namespace backend.Controllers
                 {
                     new Claim(JwtRegisteredClaimNames.Sub, Security.Encrypt(AppSettings.appSettings.JwtEmailEncryption, response.email)),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim("Role", response.roleId.ToString())
+                    new Claim("Role", response.roleId.ToString()),
+                    new Claim("UserId", response.userId.ToString())
                 };
 
                 var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(AppSettings.appSettings.JwtSecret));

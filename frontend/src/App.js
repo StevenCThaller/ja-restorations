@@ -6,6 +6,7 @@ import TopNavigation from './components/TopNavigation/TopNavigation';
 import Home from './components/Home';
 import { connect } from 'react-redux';
 import FurnitureForm from './containers/FurnitureForm';
+import AvailableNow from './containers/AvailableNow';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 
@@ -21,6 +22,7 @@ const App = props => {
         <Route path="/login" component={Login} />
         <Route path="/logout" component={Logout} />
         <Route path="/addfurniture" component={FurnitureForm}/>
+        <Route path="/available" component={AvailableNow}/>
       </Switch>
     </div>
   );

@@ -116,6 +116,7 @@ namespace backend
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IFurnitureService, FurnitureService>();
             
         }
 

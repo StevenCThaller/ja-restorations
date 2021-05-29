@@ -6,10 +6,17 @@
     justify-content: space-between;
     padding: 5px 15px 5px 5px;
     color: white;
+    border-bottom: 3px solid #FDCC39;
 }
 .navCat {
     margin-left: 25px;
     font-size: 20px;
+    color: white;
+    text-decoration: none;
+}
+.navCat:hover {
+    color:#FDCC39;
+    text-decoration: none;
 }
 
 .navCat a {

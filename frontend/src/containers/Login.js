@@ -6,6 +6,7 @@ import { setUser } from '../actions/userActions';
 import config from '../config.json';
 import { withRouter, Redirect } from 'react-router-dom';
 import axios from 'axios';
+import jwt from 'jsonwebtoken';
 
 const Login = props => {
     const { login, auth, user, setUser } = props;
@@ -15,13 +16,10 @@ const Login = props => {
     }
 
     const googleResponse = response => {
-        console.log(response)
         if(!response.tokenId) {
             console.error("Unable to get tokenId from Google", response);
             return;
         }
-
-        console.log(response);
 
         const tokenBlob = new Blob([JSON.stringify({ tokenId: response.tokenId }, null, 2)], { type: 'application/json' });
         
@@ -35,16 +33,12 @@ const Login = props => {
         fetch(config.GOOGLE_AUTH_CALLBACK_URL, options)
             .then(response => response.json())
             .then(user => {
-                console.log(user);
                 const token = user.token;
                 login(token);
-                return token;
+                return { uId: jwt.decode(token).UserId, token };
             })
-            .then(token => axios.get('http://localhost:5000/api/users/3', { headers: { Authorization: `Bearer ${token}` } }))
-            .then(user => {
-                console.log(user.data.value.results);
-                setUser(user.data.value.results)
-            })
+            .then(({uId, token}) => axios.get(`http://localhost:5000/api/users/${uId}`, { headers: { Authorization: `Bearer ${token}` } }))
+            .then(user => setUser(user.data.value.results))
             .catch(err => console.log(err));
     }
 

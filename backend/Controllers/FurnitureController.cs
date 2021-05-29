@@ -38,12 +38,14 @@ namespace backend.Controllers
         //     _authService = authService;
         // }
 
+        private IFurnitureService _furnitureService;
         private MyContext _context;
 
-        public FurnitureController(MyContext context, IAuthService authService)
+        public FurnitureController(MyContext context, IAuthService authService, IFurnitureService furnitureService)
         {
             _authService = authService;
             _context = context;
+            _furnitureService = furnitureService;
         }
 
         [AllowAnonymous]
@@ -57,6 +59,23 @@ namespace backend.Controllers
                 .ThenInclude(i => i.s3Image);
 
             return Json(new { message = "success", data = allFurniture });
+        }
+
+        [AllowAnonymous]
+        [HttpGet("available")]
+        public async Task<IActionResult> GetAvailableFurniture()
+        {
+            try
+            {
+                await Task.Delay(1);
+                List<Furniture> furniture = _furnitureService.GetAvailableFurniture();
+                return Ok(new { message = "success", results = furniture });
+            }
+            catch(Exception ex)
+            {
+                System.Console.WriteLine("fucking how?");
+                return BadRequest(Json(new { message = "error", results = ex.Message }));
+            }
         }
 
         [HttpPost("")]

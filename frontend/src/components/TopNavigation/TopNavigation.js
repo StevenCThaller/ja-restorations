@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux';
 import { withRouter, NavLink } from 'react-router-dom';
-import { useHistory } from 'react-router-dom';
 import NavLogo from '../../containers/NavLogo/NavLogo';
 import NavSearch from '../../containers/NavSearch/NavSearch';
 import UserStatus from '../UserStatus';
@@ -20,10 +19,10 @@ const TopNavigation = props => {
             <div class={navLeft}>
                 <NavLogo/>
                 <span className={navCat}>Categories</span>
-                <span className={navCat}>Available Now</span>
+                <NavLink className={navCat} to="/available">Available Now</NavLink>
                 <span className={navCat}>Gallery</span>
             </div>
-            <div class={navRight}>
+            <div className={navRight}>
                 <NavSearch />
                 <UserStatus className={navCat} />
             </div>
