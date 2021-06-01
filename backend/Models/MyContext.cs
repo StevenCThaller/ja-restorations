@@ -19,6 +19,7 @@ namespace backend.Models
         public DbSet<Appraisal> Appraisals { get; set; }
         public DbSet<FurnitureHasColor> FurnitureHasColors { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<FurnitureLike> FurnitureLikes { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Role>()

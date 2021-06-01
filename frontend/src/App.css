@@ -1,5 +1,29 @@
-.App {
+/* .App {
   text-align: center;
+} */
+*{
+  color: white;
+}
+
+.my-modal .modal-content {
+  background-color: #26252a;
+}
+
+.my-modal * {
+  /* color: #26252a; */
+  text-align: center;
+}
+
+.yellow-button {
+  background-color:#FDCC39 !important;
+}
+
+.yellow-button * {
+  color : #26252a !important;
+}
+
+body {
+  background-color: #26252a;
 }
 
 .proper-case {
@@ -91,4 +115,15 @@
   height: 450px;
   width: auto;
   margin: auto;
+}
+
+
+.rc-menu__submenu > .rc-menu__item::after {
+  content: none !important;
+}
+
+.rc-menu__submenu > .rc-menu__item::before {
+  content: '❮';
+  position: absolute;
+  left: 0.5rem;
 }

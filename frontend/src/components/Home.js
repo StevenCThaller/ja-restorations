@@ -6,30 +6,30 @@ import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import MainHeader from '../containers/MainHeader/MainHeader';
 import DeleteFurniture from '../containers/DeleteFurniture';
+import { getHeaders } from '../services/furnitureService';
 
 const Home = props => {
     const { user } = props;
-    const [furniture, setFurniture] = useState([]);
+    // const [furniture, setFurniture] = useState([]);
 
-    console.log(user);
+    // console.log(user);
 
-    useEffect(() => {
-        let token = jwt.decode(props.auth.user);
-        console.log(token);
-        axios.get('http://localhost:5000/api/furniture', {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
-        )
-            .then(response => setFurniture(response.data.data))
-            .catch(err => console.log(err));
-    }, [])
+    // useEffect(() => {
+    //     let token = jwt.decode(props.auth.user);
+    //     // console.log(token);
+    //     axios.get('http://localhost:5000/api/furniture', {
+    //         headers: {
+    //             Authorization: `Bearer ${token}`
+    //         }
+    //     })
+    //         .then(response => setFurniture(response.data.data))
+    //         .catch(err => console.log(err));
+    // }, [])
 
 
     return (
         <div>
-            <NavLink to="/addfurniture">Furniture</NavLink>
+            {/* <NavLink to="/addfurniture">Furniture</NavLink> */}
             <MainHeader/>
             
         </div>

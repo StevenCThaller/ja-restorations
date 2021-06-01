@@ -1,5 +1,5 @@
 #topNav {
-    background-color: #26252a;
+    /* background-color: #26252a; */
     display: flex;
     height: 70px;
     align-items: center;
@@ -17,11 +17,17 @@
 .navCat:hover {
     color:#FDCC39;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .navCat a {
     text-decoration: none;
     color: white;
+}
+
+.navCat a:hover {
+    color:#FDCC39;
+    text-decoration: none;
 }
 
 .navRight {
@@ -36,4 +42,8 @@
     justify-content: flex-start;
     align-items: center;
     width: 50%;
+}
+
+#loggedIn {
+    font-size: 75%;
 }

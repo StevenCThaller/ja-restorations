@@ -7,6 +7,7 @@ import config from '../config.json';
 import { withRouter, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
+import Modal from 'react-bootstrap/Modal';
 
 const Login = props => {
     const { login, auth, user, setUser } = props;
@@ -44,31 +45,16 @@ const Login = props => {
 
     let content = !!auth.isAuthenticated ?
         (
-            <div>
-                <Redirect to={{pathname: "/" }}/>
-            </div>
+            <Redirect to={{pathname: "/" }}/>
         ) :
         (
-            <div>
-                <GoogleLogin 
-                    clientId={config.GOOGLE_CLIENT_ID}
-                    buttonText="Google Login"
-                    onSuccess={googleResponse}
-                    onFailure={googleResponse}
-                    // isSignedIn={true}
-                    fetchBasicProfile={false}
-                    // scope="openid"
-                    accessType="offline"
-                    // responseType="token_id"
-                />
-            </div>
+            <p>oops</p>
         )
 
     return (
-        <div>
-            <h2>Login</h2>
+        <>
             { content }
-        </div>
+        </>
     )
 }
 const mapStateToProps = state => {

@@ -6,18 +6,9 @@ import { textHandler, numberHandler } from '../actions/furnitureActions';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { getFurnitureTypes, convertFilesToFormData, getHeaders, submitFurniture, submitImages } from '../services/furnitureService';
 
-String.prototype.hashUrlCode = function() {
-    var hash = 0, i, chr;
-    let split = this.split('.');
-    if (split[0].length === 0) return hash;
-    for (i = 0; i < split[0].length; i++) {
-        chr   = split[0].charCodeAt(i);
-        hash  = ((hash << 10) - hash) + chr;
-        hash |= 0; // Convert to 32bit integer
-    }
-    return hash+'.'+split[1];
-};
+
 
 const FurnitureForm = props => {
     const { auth, furniture, textChangeHandler, numberChangeHandler } = props;
@@ -28,16 +19,12 @@ const FurnitureForm = props => {
     const history = useHistory();
 
     useEffect(() => {
-        getTypes(setTypes);
-    }, []);
-
-    const getTypes = set => {
-        axios.get('http://localhost:5000/api/furniture/types')
+        getFurnitureTypes()
             .then(response => {
-                set(response.data.types)
+                setTypes(response.data.types)
             })
             .catch(err => console.log(err));
-    }
+    }, []);
 
 
     const addImages = e => {
@@ -49,36 +36,21 @@ const FurnitureForm = props => {
         setDisplayImages([...displayImages.slice(0, i), ...displayImages.slice(i+1)])
     }
 
-
-    
-
     const submitHandler = e => {
         e.preventDefault();
-        let formData = new FormData();
-        for(let i = 0; i < images.length; i++) {
-            formData.append('fileNames', images[i].name.hashUrlCode());
-            formData.append('formFiles', images[i]);
-        }
-
         if(images.hasOwnProperty(0)) {
             submitFurniture(furniture, { Authorization: `Bearer ${auth.user}`})
-                .then(response =>{
-                    console.log(response);
-                    return submitImages(response.data.value.results, formData, { headers: { Authorization: `Bearer ${auth.user}`} })
-                })
-                .then(response => history.push('/'))
+                .then(response => submitImages(response.data.value.results, convertFilesToFormData(images), getHeaders(auth)))
+                .then(() => history.push('/'))
                 .catch(err => console.log(err));
         } else {
             submitFurniture(furniture, { Authorization: `Bearer ${auth.user}`})
-                .then(response => history.push('/'))
+                .then(() => history.push('/'))
                 .catch(err => console.log(err));
             
         }
     }
 
-    const submitFurniture = (body, headers) => axios({ url: 'http://localhost:5000/api/furniture', method: 'POST', data: body, headers })
-
-    const submitImages = (id, formData, headers) => axios.post(`http://localhost:5000/api/images/furniture/${id}`, formData, headers)
 
     return (
         <form onSubmit={submitHandler}>

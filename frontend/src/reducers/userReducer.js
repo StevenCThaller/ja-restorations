@@ -11,7 +11,8 @@ const initialUser = {
     email: '',
     firstName: '', 
     lastName: '',
-    role: ''
+    role: '',
+    userId: ''
 }
 
 const userReducer = (user = initialUser, action) => {
@@ -20,13 +21,16 @@ const userReducer = (user = initialUser, action) => {
             const token = jwt.decode(action.payload);
             console.log(token);
             let tEmail = decrypt(token.sub, config.EMAIL_ENCRYPTION);
+            // let tEmail = decrypt(token.sub, config.EMAIL_ENCRYPTION);
             let tFName = decrypt(token.sub, config.JwtSecret);
             let tLName = decrypt(token.sub, config.JwtSecret);
+
             user = { ...user, email: tEmail, firstName: tFName, lastName: tLName };
             break;
         case "user/set":
-            const { email, firstName, lastName, roleId } = action.payload;
-            user = { ...user, email, firstName, lastName, role: roleId }
+            console.log(action.payload);
+            const { email, firstName, lastName, roleId, userId } = action.payload;
+            user = { ...user, email, firstName, lastName, role: roleId, userId }
             break;
         case "user/clear":
             user = initialUser;
