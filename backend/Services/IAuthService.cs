@@ -23,9 +23,11 @@ namespace backend.Services
     public class AuthService : IAuthService
     {
         private MyContext _context;
-        public AuthService(MyContext context)
+        private readonly AppSettings _appSettings;
+        public AuthService(MyContext context, AppSettings appSettings)
         {
             _context = context;
+            _appSettings = appSettings;
         }
 
         public async Task<bool> AuthorizeByHeaders(HttpRequest request, int clearance)
@@ -42,7 +44,22 @@ namespace backend.Services
             {
                 return false;
             }
-
+            return true;
+        }
+        public async Task<AuthResponse> Authenticate(IAuthRequest authReq)
+        {
+            await Task.Delay(1);
+            // return this.FindOrAdd(payload);
+            var response = new AuthResponse() { JwtToken = "", RefreshToken = "" };
+            return response;
+        }
+        public AuthResponse RefreshToken(string token)
+        {
+            var response = new AuthResponse();
+            return response;
+        }
+        public bool RevokeToken(string token)
+        {
             return true;
         }
         private bool AuthorizeByEmail(string email, int roleId)

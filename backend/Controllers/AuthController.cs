@@ -103,5 +103,11 @@ namespace backend.Controllers
             else
                 return HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
         }
+        
+        [HttpGet("gAuth")]
+        public IActionResult gAuth(GoogleLogin gLogin)
+        {
+            return Ok("it worked");
+        }
     }
 }
