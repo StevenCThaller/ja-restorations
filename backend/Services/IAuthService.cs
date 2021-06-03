@@ -46,26 +46,27 @@ namespace backend.Services
             }
             return true;
         }
-        public async Task<AuthResponse> Authenticate(IAuthRequest authReq)
-        {
-            await Task.Delay(1);
-            // return this.FindOrAdd(payload);
-            var response = new AuthResponse() { JwtToken = "", RefreshToken = "" };
-            return response;
-        }
-        public AuthResponse RefreshToken(string token)
-        {
-            var response = new AuthResponse();
-            return response;
-        }
-        public bool RevokeToken(string token)
-        {
-            return true;
-        }
+        // public async Task<AuthResponse> Authenticate(IAuthRequest authReq)
+        // {
+        //     await Task.Delay(1);
+        //     // return this.FindOrAdd(payload);
+        //     var response = new AuthResponse() { JwtToken = "", RefreshToken = "" };
+        //     return response;
+        // }
+        // public AuthResponse RefreshToken(string token)
+        // {
+        //     var response = new AuthResponse();
+        //     return response;
+        // }
+        // public bool RevokeToken(string token)
+        // {
+        //     return true;
+        // }
         private bool AuthorizeByEmail(string email, int roleId)
         {
             return _context.Users.Any(u => u.email == email && u.roleId == roleId);
         }
+
         // public async Task<AuthResponse> AuthenticateWithProvider(AuthProvider provider, IAuthRequest authReq)
         // {
 
