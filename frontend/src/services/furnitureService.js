@@ -25,6 +25,4 @@ export const convertFilesToFormData = images => {
     return formData;
 }
 
-export const getHeaders = auth => ({ headers: { Authorization: `Bearer ${auth.user}`}})
-
 export const getFurnitureTypes = () => axios.get('http://localhost:5000/api/furniture/types')

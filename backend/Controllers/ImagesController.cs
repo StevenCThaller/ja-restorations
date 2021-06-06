@@ -27,7 +27,8 @@ namespace backend.Controllers
     [Route("api/[controller]")]
     public class ImagesController : Controller 
     {
-        // private IAuthService _authService;
+        private IAuthService _authService;
+        private IUserService _userService;
 
         // public ImagesController(IAuthService authService)
         // {
@@ -36,8 +37,10 @@ namespace backend.Controllers
         private IImageService _imageService;
         private MyContext _context;
         private IAmazonS3 client; 
-        public ImagesController(MyContext context, IImageService imageService)
+        public ImagesController(MyContext context, IImageService imageService, IAuthService authService, IUserService userService)
         {
+            _userService = userService;
+            _authService = authService;
             _context = context;
             _imageService = imageService;
             client = new AmazonS3Client(AppSettings.appSettings.AWSAccessKey, AppSettings.appSettings.AWSSecretKey, RegionEndpoint.USEast2);
@@ -80,18 +83,74 @@ namespace backend.Controllers
 
 
         [HttpPost("furniture/{furnitureId}")]
-        public JsonResult UploadImages(int furnitureId, [FromForm] FileModel files)
+        public async Task<IActionResult> UploadFurnitureImages(int furnitureId, [FromForm] FileModel files)
         {
-            
-            Furniture existing = _context.Furniture.FirstOrDefault(f => f.furnitureId == furnitureId);
-            if(existing == null) {
-                return Json(new { message = "error", error = "That furniture does not exist." });
-            }
-            List<S3Image> images = new List<S3Image>();
-            for(int i = 0; i < files.FormFiles.Count; i++)
+            try 
             {
-                var file = files.FormFiles[i];
-                string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/s3", files.FileNames[i]);
+                if(!await _authService.AuthorizeByHeadersAndRoleId(Request, 2))
+                {
+                    return Unauthorized(Json(new { message = "unauthorized", results = "You are unauthorized to access this resource"}));
+                }
+
+                Furniture existing = _context.Furniture.FirstOrDefault(f => f.furnitureId == furnitureId);
+                if(existing == null) {
+                    return Json(new { message = "error", error = "That furniture does not exist." });
+                }
+                List<S3Image> images = new List<S3Image>();
+                for(int i = 0; i < files.FormFiles.Count; i++)
+                {
+                    var file = files.FormFiles[i];
+                    string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/s3", files.FileNames[i]);
+
+                    using (Stream stream = new FileStream(path, FileMode.Create))
+                    {
+                        file.CopyTo(stream);
+                        TransferUtility utility = new TransferUtility(client);
+                        TransferUtilityUploadRequest request = new TransferUtilityUploadRequest();
+
+                        request.BucketName = $"{AppSettings.appSettings.BucketName}/{AppSettings.appSettings.FurnitureDir}";
+                        request.Key = files.FileNames[i];
+                        request.InputStream = stream;
+                        utility.Upload(request);
+                        FileInfo toDelete = new FileInfo(path);
+                        toDelete.Delete();
+                    }
+                    
+                    S3Image img = new S3Image()
+                    {
+                        url = $"https://{AppSettings.appSettings.BucketName}.s3.{AppSettings.appSettings.Region}.amazonaws.com/{AppSettings.appSettings.FurnitureDir}/{files.FileNames[i]}"
+                    };
+                    images.Add(img);
+                    _context.Add(img);
+                }
+
+                _context.SaveChanges();
+                
+
+                ConnectImagesToFurniture(furnitureId, images);
+                return Ok(Json(new { message = "success", data = images }));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(Json(new { message = "error", data = ex.Message }));
+            }
+            
+        }
+
+        [HttpPost("users/{userId}")]
+        public async Task<IActionResult> UploadProfileImage(int userId, [FromForm] FileModel files)
+        {
+            try
+            {
+                if(!await _authService.AuthorizeByHeadersAndUserId(Request, userId))
+                {
+                    return Unauthorized(Json(new { message = "unauthorized", results = "You are unauthorized to access this resource"}));
+                }
+
+                User user = await _userService.GetUser(userId);
+
+                var file = files.FormFiles[0];
+                string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/s3", files.FileNames[0]);
 
                 using (Stream stream = new FileStream(path, FileMode.Create))
                 {
@@ -99,28 +158,23 @@ namespace backend.Controllers
                     TransferUtility utility = new TransferUtility(client);
                     TransferUtilityUploadRequest request = new TransferUtilityUploadRequest();
 
-                    request.BucketName = $"{AppSettings.appSettings.BucketName}/{AppSettings.appSettings.FurnitureDir}";
-                    request.Key = files.FileNames[i];
+                    request.BucketName = $"{AppSettings.appSettings.BucketName}/{AppSettings.appSettings.UserDir}";
+                    request.Key = files.FileNames[0];
                     request.InputStream = stream;
                     utility.Upload(request);
                     FileInfo toDelete = new FileInfo(path);
                     toDelete.Delete();
                 }
-                
-                S3Image img = new S3Image()
-                {
-                    url = $"https://{AppSettings.appSettings.BucketName}.s3.{AppSettings.appSettings.Region}.amazonaws.com/{AppSettings.appSettings.FurnitureDir}/{files.FileNames[i]}"
-                };
-                images.Add(img);
-                _context.Add(img);
+
+                user.profilePicture = $"https://{AppSettings.appSettings.BucketName}.s3.{AppSettings.appSettings.Region}.amazonaws.com/{AppSettings.appSettings.UserDir}/{files.FileNames[0]}";
+                _context.SaveChanges();
+
+                return Ok(Json(new { message = "success", results = user }));
             }
-
-            _context.SaveChanges();
-            
-
-            ConnectImagesToFurniture(furnitureId, images);
-            return Json(new { message = "success", data = images });
-            
+            catch(Exception ex)
+            {
+                return BadRequest(Json(new { message = "error", data = ex.Message }));
+            }
         }
 
         [NonAction]

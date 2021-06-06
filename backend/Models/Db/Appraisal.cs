@@ -25,6 +25,9 @@ namespace backend.Models
         public bool sturdy { get; set; }
         public int estimatedWeight { get; set; }
 
+        public int appraisalStatusId { get; set; }
+        public AppraisalStatus appraisalStatus { get; set; }
+
         public DateTime createdAt { get; set; } = DateTime.Now;
         public DateTime updatedAt { get; set; } = DateTime.Now;
     }

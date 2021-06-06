@@ -6,7 +6,7 @@ import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import MainHeader from '../containers/MainHeader/MainHeader';
 import DeleteFurniture from '../containers/DeleteFurniture';
-import { getHeaders } from '../services/furnitureService';
+import { GetHeaders } from '../services/authService';
 
 const Home = props => {
     const { user } = props;

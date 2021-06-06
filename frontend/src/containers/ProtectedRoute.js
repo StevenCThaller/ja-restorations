@@ -1,14 +1,13 @@
 import { connect } from 'react-redux';
 import { Redirect, Route, withRouter } from 'react-router-dom';
 
-const AdminRoute = props => {
-    const { user, children, ...rest } = props;
-    console.log(user.role);
+const ProtectedRoute = props => {
+    const { user, children, component, level, ...rest } = props;
     return (
         <Route 
             { ...rest }
             render={({ location }) =>
-                user.role >= 3 ? (
+                user.role >= level ? (
                     children
                 ) : (
                     <Redirect to={{ pathname: "/", state: { from: location }}}/>
@@ -25,4 +24,4 @@ const mapStateToProps = state => {
     }
 }
 
-export default withRouter(connect(mapStateToProps)(AdminRoute));
+export default withRouter(connect(mapStateToProps)(ProtectedRoute));

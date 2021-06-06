@@ -34,7 +34,7 @@ namespace backend.Controllers
         {
             try
             {
-                if(!await _authService.AuthorizeByHeaders(Request, 1))
+                if(!await _authService.AuthorizeByHeadersAndRoleId(Request, 1))
                 {
                     return BadRequest(Json(new { message = "unauthorized", results = "You are unauthorized to access this resource" }));
                 }
@@ -42,6 +42,64 @@ namespace backend.Controllers
                 User user = await _userService.GetUser(userId);
 
                 return Ok(Json(new { message = "success", results = user }));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(Json(new { message = "error", results = ex.Message }));
+            }
+        }
+
+        [HttpGet("{userId}/account")]
+        public async Task<IActionResult> GetAccountDetails(int userId)
+        {
+            try
+            {
+                if(!await _authService.AuthorizeByHeadersAndUserId(Request, userId))
+                {
+                    return BadRequest(Json(new { message = "unauthorized", results = "You are unauthorized to access this resource" }));
+                }
+
+                UserDetails user = await _userService.GetUserDetails(userId);
+
+                return Ok(Json(new { message = "success", results = user }));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(Json(new { message = "error", results = ex.Message }));
+            }
+        }
+
+        [HttpPut("{userId}/edit")]
+        public async Task<IActionResult> UpdateUser(int userId, [FromBody] UserDetails viewUser)
+        {
+            try
+            {
+                if(!await _authService.AuthorizeByHeadersAndUserId(Request, 1))
+                {
+                    return BadRequest(Json(new { message = "unauthorized", results = "You are unauthorized to access this resource" }));
+                }
+
+                User updated = await _userService.UpdateUser(userId, viewUser);
+                
+                return Ok(Json(new { message = "success", results = updated }));
+            }
+            catch(Exception ex) 
+            {
+                return BadRequest(Json(new { message = "error", results = ex.Message }));
+            }
+        }
+
+        [HttpGet("{userId}/verify")]
+        public async Task<IActionResult> VerifyUser(int userId)
+        {
+            try
+            {
+                if(!await _authService.AuthorizeByHeaders(Request))
+                {
+                    return BadRequest(Json(new { message = "unauthorized", results = "You are unauthorized to access this resource" }));
+                }
+
+                return Ok(Json(new { message = "success", results = true }));
             }
             catch(Exception ex)
             {

@@ -4,7 +4,8 @@ import '@szhsin/react-menu/dist/index.css';
 import { useHistory, withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
-import { navCat } from '../../components/TopNavigation/TopNavigation.module.css';
+import { userStatus, profilePicture, loggedIn } from '../UserStatus/UserStatus.module.css';
+import profileDefault from '../../assets/images/pfpDefault.png'
 
 const KebabMenu = props => {
     const history = useHistory();
@@ -12,12 +13,17 @@ const KebabMenu = props => {
     
     return (
         <Menu menuButton={
-            // <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-            //     <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
-            // </svg>
-            <span className={navCat}>{user.email.slice(0, user.email.indexOf('@'))}</span>
+            <div className={userStatus}>
+                <img className={profilePicture} src={profileDefault} alt="No Profile Picture" />
+                <span>{
+                    user.firstName ?
+                    user.firstName
+                    :
+                    user.email.slice(0, user.email.indexOf('@'))
+                }</span>
+            </div>
         }>
-            <MenuItem>Thing One</MenuItem>
+            <MenuItem onClick={() => history.push('/account')}>Account</MenuItem>
             <MenuItem>Thing Two</MenuItem>
             <MenuItem>Thing Three</MenuItem>
             <MenuDivider />

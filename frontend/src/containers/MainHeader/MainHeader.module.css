@@ -1,0 +1,9 @@
+.headerCarousel {
+    height: 450px;
+}
+
+.carouselImage {
+    height: 100%;
+    width: auto;
+    margin: auto;
+  }

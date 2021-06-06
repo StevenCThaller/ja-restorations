@@ -20,7 +20,6 @@ using System.Web;
 using Amazon;
 using Amazon.S3;
 using Amazon.S3.Transfer;
-using backend.Helpers;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -83,7 +82,7 @@ namespace backend.Controllers
         {
             try
             {
-                if(!await _authService.AuthorizeByHeaders(Request, 2))
+                if(!await _authService.AuthorizeByHeadersAndRoleId(Request, 2))
                 {
                     return Unauthorized(Json(new { message = "unauthorized", results = "You are unauthorized to access this resource"}));
                 }

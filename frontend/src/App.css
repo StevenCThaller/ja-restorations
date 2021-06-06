@@ -5,6 +5,23 @@
   color: white;
 }
 
+button {
+  color: #26252a;
+}
+
+button label { 
+  color: #26252a;
+}
+
+input {
+  color: #26252a;
+}
+
+main {
+  max-width: 1280px;
+  margin: 0px auto;
+}
+
 .my-modal .modal-content {
   background-color: #26252a;
 }
@@ -111,13 +128,6 @@ body {
   justify-content: left;
 }
 
-.carousel-image {
-  height: 450px;
-  width: auto;
-  margin: auto;
-}
-
-
 .rc-menu__submenu > .rc-menu__item::after {
   content: none !important;
 }
@@ -126,4 +136,8 @@ body {
   content: '❮';
   position: absolute;
   left: 0.5rem;
+}
+
+.rc-menu * {
+  color: #26252a;
 }

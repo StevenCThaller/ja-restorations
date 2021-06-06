@@ -1,15 +1,18 @@
 import { useState } from 'react'
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { navCat } from './TopNavigation/TopNavigation.module.css';
+import { navCat } from '../../components/TopNavigation/TopNavigation.module.css';
 import Modal from 'react-bootstrap/Modal';
 import { GoogleLogin } from 'react-google-login';
-import config from '../config.json';
-import { login } from '../actions/authActions';
+import config from '../../config.json';
+import { login } from '../../actions/authActions';
 import jwt from 'jsonwebtoken';
-import { setUser } from '../actions/userActions';
+import { setUser } from '../../actions/userActions';
 import axios from 'axios';
-import NavUser from './NavUser';
+import NavUser from '../../components/NavUser';
+import KebabMenu from '../KebabMenu/KebabMenu';
+import profileDefault from '../../assets/images/pfpDefault.png'
+import { profilePicture, userStatus } from './UserStatus.module.css';
 
 const UserStatus = props => {
     const { auth, user, login, setUser } = props;
@@ -45,27 +48,30 @@ const UserStatus = props => {
             .then(response => response.json())
             .then(user => {
                 const token = user.token;
+                console.log(token);
                 login(token);
                 handleClose();
-                return { uId: jwt.decode(token).UserId, token };
+                return { uId: jwt.decode(token).UserId, token: token };
             })
-            .then(({uId, token}) => axios.get(`http://localhost:5000/api/users/${uId}`, { headers: { Authorization: `Bearer ${token}` } }))
+            .then( ({uId, token}) => axios.get(`http://localhost:5000/api/users/${uId}`, { headers: { Authorization: `Bearer ${token}` } }))
             .then(user => setUser(user.data.value.results))
             .catch(err => console.log(err));
     }
 
     let content = !!auth.isAuthenticated ?
         (
-            <NavUser 
-                email={user.email}
-                role={user.Role}
-                navCat={navCat}
-            />
+            // <NavUser 
+            //     email={user.email}
+            //     role={user.Role}
+            //     navCat={navCat}
+            // />
+            <KebabMenu/>
         ) :
         (
-            <span className={navCat} onClick={handleOpen}>
-                Sign In
-            </span>
+            <div className={userStatus} onClick={handleOpen}>
+                <img className={ profilePicture } src={profileDefault} alt="No Profile Picture" />
+                <span>Sign In</span>
+            </div>
         )
 
     return (

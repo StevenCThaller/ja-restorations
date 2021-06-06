@@ -11,7 +11,9 @@ namespace backend.Services
 {
     public interface IAuthService
     {
-        Task<bool> AuthorizeByHeaders(HttpRequest request, int clearance);
+        Task<bool> AuthorizeByHeadersAndRoleId(HttpRequest request, int clearance);
+        Task<bool> AuthorizeByHeadersAndUserId(HttpRequest request, int userId);
+        Task<bool> AuthorizeByHeaders(HttpRequest request);
         // AuthResponse AuthenticateWithProvider(AuthProvider provider, IAuthRequest authRequest);
         // // AuthResponse AuthenticateWithFacebook(IAuthRequest model);
         // // AuthResponse AuthenticateWithTwitter(IAuthRequest model);
@@ -28,7 +30,7 @@ namespace backend.Services
             _context = context;
         }
 
-        public async Task<bool> AuthorizeByHeaders(HttpRequest request, int clearance)
+        public async Task<bool> AuthorizeByHeadersAndRoleId(HttpRequest request, int clearance)
         {
             await Task.Delay(0);
             var something = request.Headers["Authorization"].ToString().Remove(0, 7);
@@ -38,16 +40,46 @@ namespace backend.Services
             string decryptedEmail = Security.Decrypt(AppSettings.appSettings.JwtEmailEncryption, token.Claims.First(c => c.Type == "sub").Value);
             var roleResult = Int32.TryParse(token.Claims.First(c => c.Type == "Role").Value, out int roleId);
 
-            if(decryptedEmail == null || !roleResult || !this.AuthorizeByEmail(decryptedEmail, roleId))
+            if(decryptedEmail == null || !roleResult || !this.AuthorizeByEmailAndRole(decryptedEmail, roleId))
             {
                 return false;
             }
 
             return true;
         }
-        private bool AuthorizeByEmail(string email, int roleId)
+        private bool AuthorizeByEmailAndRole(string email, int roleId)
         {
             return _context.Users.Any(u => u.email == email && u.roleId == roleId);
+        }
+
+        public async Task<bool> AuthorizeByHeadersAndUserId(HttpRequest request, int userId)
+        {
+            await Task.Delay(0);
+            var something = request.Headers["Authorization"].ToString().Remove(0, 7);
+            JwtSecurityToken token = new JwtSecurityTokenHandler().ReadToken(something) as JwtSecurityToken;
+
+            string decryptedEmail = Security.Decrypt(AppSettings.appSettings.JwtEmailEncryption, token.Claims.First(c => c.Type == "sub").Value);
+            
+            if(!_context.Users.Any(u => u.email == decryptedEmail && u.userId == userId))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> AuthorizeByHeaders(HttpRequest request)
+        {
+            await Task.Delay(0);
+            var something = request.Headers["Authorization"].ToString().Remove(0, 7);
+            JwtSecurityToken token = new JwtSecurityTokenHandler().ReadToken(something) as JwtSecurityToken;
+
+            string decryptedEmail = Security.Decrypt(AppSettings.appSettings.JwtEmailEncryption, token.Claims.First(c => c.Type == "sub").Value);
+            
+            if(!_context.Users.Any(u => u.email == decryptedEmail))
+            {
+                return false;
+            }
+            return true;
         }
         // public async Task<AuthResponse> AuthenticateWithProvider(AuthProvider provider, IAuthRequest authReq)
         // {

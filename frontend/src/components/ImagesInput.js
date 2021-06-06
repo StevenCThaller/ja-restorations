@@ -1,11 +1,12 @@
 import React, { useState, useRef } from 'react'
+import PropTypes from 'prop-types'
 
 
 import { imagesInput } from './ImagesInput.module.css';
 import ImageForUpload from './ImageForUpload';
 
 const ImagesInput = props => {
-    const { images, addImages, removeImage } = props;
+    const { images, addImages, removeImage, multiple } = props;
     const fileInput = useRef();
 
     const remove = i => {
@@ -26,7 +27,7 @@ const ImagesInput = props => {
             <button type="button">
                 <label htmlFor="images">Select images to upload:</label>
             </button>
-            <input type="file" id="images" style={{visibility: 'hidden'}} ref={fileInput} multiple onChange={addImages} accept="image/*"/>
+            <input type="file" id="images" style={{visibility: 'hidden'}} ref={fileInput} multiple={multiple ? true : false} onChange={addImages} accept="image/*"/>
             <div className="selected-images">
 
             {
@@ -39,3 +40,9 @@ const ImagesInput = props => {
 }
 
 export default ImagesInput
+
+
+
+
+
+

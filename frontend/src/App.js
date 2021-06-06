@@ -7,26 +7,72 @@ import Home from './components/Home';
 import { connect } from 'react-redux';
 import FurnitureForm from './containers/FurnitureForm';
 import AvailableNow from './containers/AvailableNow';
-import EmployeeRoute from './containers/EmployeeRoute';
+import ProtectedRoute from './containers/ProtectedRoute';
 // import 'bootstrap/dist/css/bootstrap.min.css';
+import UserProfile from './containers/UserProfile/UserProfile';
+import { useEffect, useState } from 'react';
+import { CookieIsValid, GetHeaders } from './services/authService';
+import { login, logout } from './actions/authActions';
+import { clearUser, setUser } from './actions/userActions';
+import axios from 'axios';
+import jwt from 'jsonwebtoken';
 
 
 const App = props => {
-  const { auth } = props;
-  
+  const { auth, login, logout, setUser, clearUser } = props;
+  const [loaded, setLoaded] = useState(false);
+  useEffect(async () => {
+    // localStorage.clear();
+    if(await CookieIsValid()){
+      let cookie = localStorage.getItem('jatoken');
+      login(cookie);
+      let token = jwt.decode(cookie);
+      axios.get(`http://localhost:5000/api/users/${token.UserId}`, { headers: { Authorization : `Bearer ${cookie}`}})
+        .then(response => {
+          let user = response.data.value.results;
+          if(user !== null){
+            setUser(user);
+          } else {
+            logout();
+            clearUser();
+            return Promise.reject('no');
+          }
+          setLoaded(true);
+        })
+        .catch(err => {
+          logout();
+          clearUser();
+          setLoaded(true);
+        })
+    } else {
+      logout();
+      clearUser();
+      setLoaded(true);
+    }
+  }, [])
 
   return (
     <>
-      <TopNavigation />
-      <Switch>
-        <Route exact path="/" component={Home} />
-        <Route path="/login" component={Login} />
-        <Route path="/logout" component={Logout} />
-        <EmployeeRoute path="/addfurniture">
-          <FurnitureForm/>
-        </EmployeeRoute>
-        <Route path="/available" component={AvailableNow}/>
-      </Switch>
+    {
+      loaded ?
+      <>
+        <TopNavigation />
+        <Switch>
+          <Route exact path="/" component={Home} />
+          <Route path="/login" component={Login} />
+          <Route path="/logout" component={Logout} />
+          <ProtectedRoute level={2} path="/addfurniture">
+            <FurnitureForm/>
+          </ProtectedRoute>
+          <Route path="/available" component={AvailableNow}/>
+          <ProtectedRoute level={1} path="/account">
+            <UserProfile />
+          </ProtectedRoute>
+        </Switch>
+      </>
+      :
+      ''
+      }
     </>
   );
 }
@@ -37,5 +83,22 @@ const mapStateToProps = state => {
   }
 }
 
+const mapDispatchToProps = dispatch => {
+  return {
+    login: token => {
+      dispatch(login(token));
+    },
+    logout: () => {
+      dispatch(logout());
+    },
+    setUser: token => {
+      dispatch(setUser(token));
+    },
+    clearUser: () => {
+      dispatch(clearUser());
+    }
+  }
+}
 
-export default withRouter(connect(mapStateToProps)(App));
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));

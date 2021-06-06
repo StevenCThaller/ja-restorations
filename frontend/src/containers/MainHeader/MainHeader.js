@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import Carousel from 'react-bootstrap/Carousel';
+import { headerCarousel, carouselImage } from './MainHeader.module.css';
 
 const MainHeader = () => {
     const [images, setImages] = useState([]);
@@ -10,7 +11,7 @@ const MainHeader = () => {
     useEffect(() => {
         axios.get('http://localhost:5000/api/images/furniture/5')
             .then(response => {
-                console.log(response);
+                // console.log(response);
                 setImages(response.data.value.results.filter(i => i !== null));
                 setLoaded(true);
             })
@@ -26,12 +27,12 @@ const MainHeader = () => {
     }
 
     return (
-        <Carousel activeIndex={index} onSelect={handleSelect} interval={3000}>
+        <Carousel className={headerCarousel} activeIndex={index} onSelect={handleSelect} interval={3000}>
             {
                 images.map((image, i) => 
                     // image !== null ?? 
                     <Carousel.Item key={i}>
-                        <img className="d-block carousel-image" src={image.url} alt={`Furniture image # ${i}`} />
+                        <img className={`d-block ${carouselImage} `} src={image.url} alt={`Furniture image # ${i}`} />
         
                     {/* <p className="legend">{legend}</p> */}
                     </Carousel.Item>

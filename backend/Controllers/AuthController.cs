@@ -41,7 +41,7 @@ namespace backend.Controllers
         {
             try 
             {
-                System.Console.WriteLine("userView = " + gLogin.tokenId);
+                System.Console.WriteLine("UserDetails = " + gLogin.tokenId);
                 var payload = GoogleJsonWebSignature.ValidateAsync(gLogin.tokenId, new GoogleJsonWebSignature.ValidationSettings()).Result;
                 AuthResponse response = await _authService.Authenticate(payload, ipAddress());
                 // System.Console.WriteLine(user);

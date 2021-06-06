@@ -6,8 +6,8 @@ import { textHandler, numberHandler } from '../actions/furnitureActions';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { getFurnitureTypes, convertFilesToFormData, getHeaders, submitFurniture, submitImages } from '../services/furnitureService';
-
+import { getFurnitureTypes, convertFilesToFormData, submitFurniture, submitImages } from '../services/furnitureService';
+import { GetHeaders } from '../services/authService';
 
 
 const FurnitureForm = props => {
@@ -38,15 +38,16 @@ const FurnitureForm = props => {
 
     const submitHandler = e => {
         e.preventDefault();
+        console.log(auth);
         if(images.hasOwnProperty(0)) {
-            submitFurniture(furniture, { Authorization: `Bearer ${auth.user}`})
-                .then(response => submitImages(response.data.value.results, convertFilesToFormData(images), getHeaders(auth)))
+            submitFurniture(furniture, GetHeaders(auth))
+                .then(response => submitImages(response.data.value.results, convertFilesToFormData(images), GetHeaders(auth)))
                 .then(() => history.push('/'))
-                .catch(err => console.log(err));
+                .catch(err => console.log(err.results));
         } else {
-            submitFurniture(furniture, { Authorization: `Bearer ${auth.user}`})
+            submitFurniture(furniture, GetHeaders(auth))
                 .then(() => history.push('/'))
-                .catch(err => console.log(err));
+                .catch(err => console.log(err.results));
             
         }
     }
@@ -91,7 +92,7 @@ const FurnitureForm = props => {
                 <input type="number" name="estimatedWeight" onChange={numberChangeHandler} />
             </div>
             
-            <ImagesInput images={displayImages} addImages={addImages} removeImage={removeImage}  />
+            <ImagesInput images={displayImages} addImages={addImages} removeImage={removeImage} multiple={true} />
         
             <input type="submit" value="Submit" />
         </form>

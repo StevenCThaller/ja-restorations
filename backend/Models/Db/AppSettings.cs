@@ -9,6 +9,7 @@ namespace backend.Models
         public string JwtEmailEncryption { get; set; }
         public string BucketName { get; set; }
         public string FurnitureDir { get; set; }
+        public string UserDir { get; set; }
         public string AWSAccessKey { get; set; }
         public string AWSSecretKey { get; set; }
         public string Region { get; set; }

@@ -1,0 +1,26 @@
+.profilePicture {
+    width: 30px;
+    height: auto;
+    border: 3px solid #FDCC39;
+    border-radius: 50%;
+    display: block;
+    margin: 0px auto;
+}
+
+.userStatus {
+    min-width: 15%;
+    max-width: 25%;
+    font-size: 10pt;
+    /* text-shadow: 2px 2px 2px white; */
+    margin-left: 25px;
+    text-align: center;
+}
+
+.loggedIn::after {
+    content: '▼';
+}
+
+
+.userStatus:hover {
+    cursor: pointer;
+}
