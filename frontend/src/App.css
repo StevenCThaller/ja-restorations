@@ -16,6 +16,9 @@ button label {
 input {
   color: #26252a;
 }
+textarea {
+  color: #26252a;
+}
 
 main {
   max-width: 1280px;
@@ -140,4 +143,8 @@ body {
 
 .rc-menu * {
   color: #26252a;
+}
+
+.w40 {
+  width: 40%;
 }

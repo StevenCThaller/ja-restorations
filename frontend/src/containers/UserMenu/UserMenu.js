@@ -7,7 +7,7 @@ import { NavLink } from 'react-router-dom';
 import { userStatus, profilePicture, loggedIn } from '../UserStatus/UserStatus.module.css';
 import profileDefault from '../../assets/images/pfpDefault.png'
 
-const KebabMenu = props => {
+const UserMenu = props => {
     const history = useHistory();
     const { user } = props;
     
@@ -52,4 +52,4 @@ const mapStateToProps = state => {
     }
 }
 
-export default withRouter(connect(mapStateToProps)(KebabMenu))
+export default withRouter(connect(mapStateToProps)(UserMenu))

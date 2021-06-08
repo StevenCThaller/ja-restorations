@@ -2,12 +2,13 @@ const initialFurniture = {
     name: '',
     description: '',
     type: '',
-    priceFloor: '',
-    priceCeiling: null,
+    priceFloor: 0,
+    priceCeiling: 0,
     width: '',
     length: '', 
     height: '',
-    estimatedWeight: ''
+    estimatedWeight: '',
+    likedByUsers: []
 }
 const furnitureReducer = (furniture = initialFurniture, action) => {
     const { type, payload } = action;
@@ -21,8 +22,11 @@ const furnitureReducer = (furniture = initialFurniture, action) => {
         case "furniture/number":
             furniture = {
                 ...furniture,
-                [payload.target.name]: parseInt(payload.target.value)
+                [payload.target.name]: parseFloat(payload.target.value)
             }
+            return furniture;
+        case "furniture/reset":
+            furniture = initialFurniture;
             return furniture;
         default:
             return furniture;

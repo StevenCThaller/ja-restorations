@@ -36,6 +36,7 @@ namespace backend.Services
                 .Include(f => f.images)
                 .ThenInclude(i => i.s3Image)
                 .OrderByDescending(f => f.createdAt)
+                .Where(f => f.images.Count > 0)
                 .Take(count)
                 .Select(f => f.images.First().s3Image);
         }

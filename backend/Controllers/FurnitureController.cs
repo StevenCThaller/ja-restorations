@@ -49,15 +49,17 @@ namespace backend.Controllers
 
         [AllowAnonymous]
         [HttpGet("")]        
-        public JsonResult GetFurniture()
+        public async Task<IActionResult> GetAllFurniture()
         {
-            IEnumerable<Furniture> allFurniture = _context.Furniture
-                .Include(f => f.type)
-                .Include(f => f.colors)
-                .Include(f => f.images)
-                .ThenInclude(i => i.s3Image);
-
-            return Json(new { message = "success", data = allFurniture });
+            try
+            {
+                List<Furniture> allFurniture = await _furnitureService.GetAllFurniture();
+                return Ok(Json(new { message = "success", results = allFurniture }));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(Json(new { message = "error", results = ex.Message }));
+            }
         }
 
         [AllowAnonymous]
@@ -66,13 +68,11 @@ namespace backend.Controllers
         {
             try
             {
-                await Task.Delay(1);
-                List<Furniture> furniture = _furnitureService.GetAvailableFurniture();
+                List<Furniture> furniture = await _furnitureService.GetAvailableFurniture();
                 return Ok(new { message = "success", results = furniture });
             }
             catch(Exception ex)
             {
-                System.Console.WriteLine("fucking how?");
                 return BadRequest(Json(new { message = "error", results = ex.Message }));
             }
         }
@@ -106,10 +106,10 @@ namespace backend.Controllers
                         type = existingType,
                         priceFloor = furnitureForm.priceFloor,
                         priceCeiling = furnitureForm.priceCeiling,
-                        height = furnitureForm.height,
-                        length = furnitureForm.length,
-                        width = furnitureForm.width,
-                        estimatedWeight = furnitureForm.estimatedWeight
+                        height = (decimal)furnitureForm.height,
+                        length = (decimal)furnitureForm.length,
+                        width = (decimal)furnitureForm.width,
+                        estimatedWeight = (int)furnitureForm.estimatedWeight
                     };
 
                     _context.Add(furniture);                
@@ -126,33 +126,44 @@ namespace backend.Controllers
         }
 
         [HttpDelete("{furnitureId}/delete")]
-        public async Task<JsonResult> DeleteFurniture(int furnitureId)
+        public async Task<IActionResult> DeleteFurniture(int furnitureId)
         {
-            await Task.Delay(1);
-            Furniture existing = _context.Furniture
-                                    .Include(f => f.images)
-                                    .ThenInclude(i => i.s3Image)
-                                    .FirstOrDefault(f => f.furnitureId == furnitureId);
-            if(existing == null)
+            try
             {
-                return Json(new { message = "error", error = "Furniture does not exist." });
-            }
-            if(existing.images.Count > 0)
-            {
-                IEnumerable<S3Image> imagesToDelete = existing.images
-                                                        .Where(i => _context.AppraisalImages.All(ai => ai.s3ImageId != i.s3ImageId))
-                                                        .Select(i => i.s3Image);
-
-                ImageService.DeleteImages(imagesToDelete);
-                foreach(S3Image img in imagesToDelete)
+                if(!await _authService.AuthorizeByHeadersAndRoleId(Request, 2))
                 {
-                    _context.Remove(img);
+                    return Unauthorized(Json(new { message = "unauthorized", results = "You are unauthorized to access this resource"}));
                 }
-            }
-            _context.Remove(existing);
-            _context.SaveChanges();
 
-            return Json(new { message = "success", data = existing });
+                Furniture existing = _context.Furniture
+                                        .Include(f => f.images)
+                                        .ThenInclude(i => i.s3Image)
+                                        .FirstOrDefault(f => f.furnitureId == furnitureId);
+                if(existing == null)
+                {
+                    return Json(new { message = "error", error = "Furniture does not exist." });
+                }
+                if(existing.images.Count > 0)
+                {
+                    IEnumerable<S3Image> imagesToDelete = existing.images
+                                                            .Where(i => _context.AppraisalImages.All(ai => ai.s3ImageId != i.s3ImageId))
+                                                            .Select(i => i.s3Image);
+
+                    ImageService.DeleteImages(imagesToDelete);
+                    foreach(S3Image img in imagesToDelete)
+                    {
+                        _context.Remove(img);
+                    }
+                }
+                _context.Remove(existing);
+                _context.SaveChanges();
+
+                return Ok(Json(new { message = "success", data = existing }));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(Json(new { message = "error", results = ex.Message}));
+            }
         }
         
         [AllowAnonymous]
@@ -160,6 +171,75 @@ namespace backend.Controllers
         public JsonResult GetTypes()
         {
             return Json(new { types = _context.FurnitureTypes }); 
+        }
+
+        [HttpPatch("sell")]
+        public async Task<IActionResult> MarkFurnitureAsSold([FromBody] SaleForm saleForm)
+        {
+            try
+            {
+                if(!await _authService.AuthorizeByHeadersAndRoleId(Request, 2))
+                {
+                    System.Console.WriteLine("Ew go away.");
+                    return Unauthorized(Json(new { message = "unauthorized", results = "You are unauthorized to access this resource"}));
+                }
+
+                await _furnitureService.MarkAsSold(saleForm);
+
+                return Ok(Json(new { message = "success", results = true }));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(Json(new { message = "error", results = ex.Message }));
+            }
+        }
+
+        [HttpPost("like")]
+        public async Task<IActionResult> AddLike([FromBody] FurnitureLikeForm furnitureLikeForm)
+        {
+            try
+            {
+                if(!await _authService.AuthorizeByHeadersAndUserId(Request, furnitureLikeForm.userId))
+                {
+                    return Unauthorized(Json(new { message = "unauthorized", results = "You are unauthorized to access this resource"}));
+                }
+                FurnitureLike newlyAdded = await _furnitureService.AddLike(furnitureLikeForm);
+
+                if(newlyAdded == null)
+                {
+                    return BadRequest(Json(new { message = "error", results = "Unable to add like." }));
+                }
+
+                return Ok(Json(new { message = "success", results = newlyAdded }));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(Json(new { message = "error", results = ex.Message}));
+            }
+        }
+
+        [HttpDelete("{furnitureLikeId}/unlike")]
+        public async Task<IActionResult> RemoveLike(int furnitureLikeId)
+        {
+            try
+            {
+                int userId = await _authService.GetUserIdFromHeaders(Request);
+                if(userId == -1)
+                {
+                    return Unauthorized(Json(new { message = "unauthorized", results = "You are unauthorized to access this resource"}));
+                }
+
+                if(!await _furnitureService.RemoveLike(furnitureLikeId))
+                {
+                    return BadRequest(Json(new { message = "error", results = false }));
+                }
+
+                return Ok(Json(new { message = "success", results = true }));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(Json( new { message = "error", results = ex.Message }));
+            }
         }
 
 

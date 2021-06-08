@@ -2,16 +2,32 @@ import React, { useEffect, useState } from 'react'
 import ImagesInput from '../components/ImagesInput';
 import axios from 'axios';
 import DataList from '../components/inputs/DataList';
-import { textHandler, numberHandler } from '../actions/furnitureActions';
+import { textHandler, numberHandler, resetFurniture } from '../actions/furnitureActions';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { getFurnitureTypes, convertFilesToFormData, submitFurniture, submitImages } from '../services/furnitureService';
 import { GetHeaders } from '../services/authService';
+import TextInput from '../components/inputs/TextInput';
+import TextArea from '../components/inputs/TextArea';
+import BoxSlider from '../components/inputs/BoxSlider';
+import Price from '../components/inputs/Price';
 
+const initialErrors = {
+    name: '',
+    description: '',
+    type: '',
+    priceFloor: '',
+    priceCeiling: '',
+    length: '',
+    width: '',
+    height: '',
+    weight: ''
+}
 
 const FurnitureForm = props => {
-    const { auth, furniture, textChangeHandler, numberChangeHandler } = props;
+    const { auth, furniture, textChangeHandler, numberChangeHandler, resetFurniture } = props;
+    const [errors, setErrors] = useState(initialErrors)
     const [images, setImages] = useState({});
     const [types, setTypes] = useState([]);
     const [displayImages, setDisplayImages] = useState([]);
@@ -38,47 +54,108 @@ const FurnitureForm = props => {
 
     const submitHandler = e => {
         e.preventDefault();
-        console.log(auth);
+        console.log(GetHeaders(auth));
         if(images.hasOwnProperty(0)) {
             submitFurniture(furniture, GetHeaders(auth))
                 .then(response => submitImages(response.data.value.results, convertFilesToFormData(images), GetHeaders(auth)))
-                .then(() => history.push('/'))
-                .catch(err => console.log(err.results));
+                .then(() => {
+                    resetFurniture();
+                    history.push('/')
+                })
+                .catch(err => {
+                    let { ...newErrors } = initialErrors;
+
+                    for(const error in err.response.data.errors){
+                        if(newErrors.hasOwnProperty(error)){
+                            newErrors[error] = err.response.data.errors[error]
+                        }
+                    }
+                    if(newErrors != initialErrors){
+                        setErrors(newErrors);
+                    }
+                });
         } else {
             submitFurniture(furniture, GetHeaders(auth))
-                .then(() => history.push('/'))
-                .catch(err => console.log(err.results));
+                .then(() => {
+                    resetFurniture();
+                    history.push('/')
+                })
+                .catch(err =>{
+                    let { ...newErrors } = initialErrors;
+
+                    for(const error in err.response.data.errors){
+                        console.log(error);
+                        if(newErrors.hasOwnProperty(error)){
+                            newErrors[error] = err.response.data.errors[error]
+                        }
+                    }
+                    if(newErrors != initialErrors){
+                        setErrors(newErrors);
+                    }
+                });
             
         }
     }
 
+    const toTitleCase = st => st.split(' ').map( word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+
 
     return (
         <form onSubmit={submitHandler}>
-            <div>
-                <label htmlFor="name">Name: </label>
-                <input type="text" name="name" onChange={ textChangeHandler } />
+            <TextInput 
+                name="name" 
+                label="Name: " 
+                value={furniture.name} 
+                onChange={textChangeHandler}
+            />
+            <TextArea 
+                name="description" 
+                label="Description: " 
+                value={furniture.description} 
+                onChange={textChangeHandler}
+            />
+            <DataList 
+                id="types" 
+                name="type" 
+                label="Type: "
+                onChange={ textChangeHandler } 
+            >
+                {types.map((ty, i) => <option key={i} value={ toTitleCase(ty.name)}/>)}
+            </DataList>
+            <BoxSlider
+                name="isPriceRange"
+                optionOne="Fixed"
+                optionTwo="Range"
+                value={isPriceRange}
+                onChange={() => setIsPriceRange(r => !r)}
+            />
+            <div className="formGroup" style={{display: 'flex'}}>
+                <Price
+                    additionalClasses='w40'
+                    name="priceFloor"
+                    label="Price: "
+                    value={furniture.priceFloor}
+                    onChange={numberChangeHandler}
+                    error={errors.priceFloor}
+                />
+                {
+                    isPriceRange ?
+                    <Price
+                        additionalClasses='w40'
+                        name="priceCeiling"
+                        label="&nbsp;&nbsp;--&nbsp;&nbsp;"
+                        value={furniture.priceCeiling}
+                        onChange={numberChangeHandler}
+                        error={errors.priceCeiling}
+                    />
+                    :
+                    ''
+                }
             </div>
-            <div>
-                <label htmlFor="description">Description: </label>
-                <textarea name="description" cols="30" rows="4" onChange={textChangeHandler}></textarea>
-            </div>
-            <DataList isFor="type" listVal="types" displayVal="name" changeHandler={ textChangeHandler } data={ furniture.type } setData={ numberChangeHandler } values={types}/>
-            <div>
+            {/* <div>
                 <label htmlFor="priceFloor">{ !isPriceRange ? "Price: " : "Minimum Price" }</label>
                 <input type="number" name="priceFloor" onChange={numberChangeHandler} />
-                <label htmlFor="isPriceRange">Price Range: </label>
-                <input type="checkbox" name="isPriceRange" onChange={ () => setIsPriceRange(!isPriceRange) } checked={isPriceRange}/>
-            </div>
-            {
-                isPriceRange ?
-                <div>
-                    <label htmlFor="priceCeiling">Maximum Price</label>
-                    <input type="number" name="priceCeiling" onChange={numberChangeHandler} />
-                </div>
-                :
-                ''
-            }
+            </div> */}
             <div>
                 <label htmlFor="dimensions">Dimensions (LxWxH in): </label>
                 <input type="number" name="length" onChange={numberChangeHandler}/>
@@ -117,6 +194,9 @@ const mapDispatchToProps = dispatch => {
         },
         numberChangeHandler: target => {
             dispatch(numberHandler(target))
+        },
+        resetFurniture: () => {
+            dispatch(resetFurniture())
         }
     }
 }

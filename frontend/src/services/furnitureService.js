@@ -12,7 +12,7 @@ String.prototype.hashUrlCode = function() {
     return hash+'.'+split[1];
 };
 
-export const submitFurniture = (body, headers) => axios({ url: 'http://localhost:5000/api/furniture', method: 'POST', data: body, headers })
+export const submitFurniture = (body, headers) => axios.post('http://localhost:5000/api/furniture',body, headers )
 
 export const submitImages = (id, formData, headers) => axios.post(`http://localhost:5000/api/images/furniture/${id}`, formData, headers)
 

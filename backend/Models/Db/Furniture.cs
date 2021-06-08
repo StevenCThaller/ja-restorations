@@ -9,7 +9,6 @@ namespace backend.Models
     {
         [Key]
         public int furnitureId { get; set; }
-
         public string name { get; set; }
         public string description { get; set; }
         [ForeignKey("FurnitureType")]
@@ -35,6 +34,8 @@ namespace backend.Models
         {
             get { return sale != null; }
         }
+
+        public List<FurnitureLike> likedByUsers { get; set; }
         public DateTime createdAt { get; set; } = DateTime.Now;
         public DateTime updatedAt { get; set; } = DateTime.Now;
     }
@@ -42,37 +43,39 @@ namespace backend.Models
 
     public class NewFurnitureForm
     {
-        [Required]
+        [Required(ErrorMessage = "Name is required.")]
         public string name { get; set; }
+        [Required(ErrorMessage = "Description is required.")]
         public string description { get; set; }
         public int typeId { get; set; }
-
+        [Required(ErrorMessage = "You must assign a type to this furniture.")]
         public string type { get; set; }
 
 
         public List<int> colorIds { get; set; }
 
         [Required(ErrorMessage="A height is required. This should be in inches.")]
-        [Range(1, Double.PositiveInfinity)]
+        [Range(1, Double.PositiveInfinity, ErrorMessage = "Height must be greater than 0 inches.")]
 
-        public decimal height { get; set; }
+        public decimal? height { get; set; }
         [Required(ErrorMessage="A length is required. This should be in inches.")]
-        [Range(1, Double.PositiveInfinity)]
+        [Range(1, Double.PositiveInfinity, ErrorMessage = "Length must be greater than 0 inches.")]
 
-        public decimal length { get; set; }
+        public decimal? length { get; set; }
         [Required(ErrorMessage="A width is required. This should be in inches.")]
-        [Range(1, Double.PositiveInfinity)]
+        [Range(1, Double.PositiveInfinity, ErrorMessage = "Width must be greater than 0 inches.")]
 
-        public decimal width { get; set; }
+        public decimal? width { get; set; }
 
         [Required(ErrorMessage="Estimated weight is required.")]
-        [Range(1, Double.PositiveInfinity)]
-        public int estimatedWeight { get; set; }
+        [Range(1, Double.PositiveInfinity, ErrorMessage = "The furniture must have an estimated weight.")]
+        public int? estimatedWeight { get; set; }
 
         [Required(ErrorMessage="You must enter a price.")]
-        [Range(1, Double.PositiveInfinity)]
+        [Range(1, Double.PositiveInfinity, ErrorMessage = "Your price floor must be at least $1")]
         public decimal priceFloor { get; set; }
         
+        [Range(1, Double.PositiveInfinity, ErrorMessage = "Your price ceiling must be at least $1")]
         public decimal? priceCeiling { get; set; }
 
 

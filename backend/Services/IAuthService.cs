@@ -14,6 +14,8 @@ namespace backend.Services
         Task<bool> AuthorizeByHeadersAndRoleId(HttpRequest request, int clearance);
         Task<bool> AuthorizeByHeadersAndUserId(HttpRequest request, int userId);
         Task<bool> AuthorizeByHeaders(HttpRequest request);
+
+        Task<int> GetUserIdFromHeaders(HttpRequest request);
         // AuthResponse AuthenticateWithProvider(AuthProvider provider, IAuthRequest authRequest);
         // // AuthResponse AuthenticateWithFacebook(IAuthRequest model);
         // // AuthResponse AuthenticateWithTwitter(IAuthRequest model);
@@ -80,6 +82,24 @@ namespace backend.Services
                 return false;
             }
             return true;
+        }
+
+        public async Task<int> GetUserIdFromHeaders(HttpRequest request)
+        {
+            try 
+            {
+                await Task.Delay(0);
+                var something = request.Headers["Authorization"].ToString().Remove(0,7);
+                JwtSecurityToken token = new JwtSecurityTokenHandler().ReadToken(something) as JwtSecurityToken;
+
+                return Int32.Parse(token.Claims.First(c => c.Type == "UserId").Value);
+            }
+            catch
+            {
+                return -1;
+            }
+
+            
         }
         // public async Task<AuthResponse> AuthenticateWithProvider(AuthProvider provider, IAuthRequest authReq)
         // {

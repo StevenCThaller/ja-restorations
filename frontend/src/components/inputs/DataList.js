@@ -1,18 +1,14 @@
 import React from 'react'
 
 const DataList = props => {
-    const { listVal, isFor, values, data, displayVal, changeHandler } = props;
-
-    const toTitleCase = string => string.split(' ').map( word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    const { id, name, label, children, changeHandler } = props;
 
     return (
         <div>
-            <label htmlFor={isFor}>Type:</label>
-            <input list={listVal} name={isFor} onChange={ changeHandler } autoComplete="off"/>
-            <datalist id={listVal}>
-                {
-                    values.map((val, i) => <option key={i} value={ toTitleCase(val[displayVal])}/>)
-                }
+            <label htmlFor={name}>{label}</label>
+            <input list={id} name={name} onChange={ changeHandler } autoComplete="off"/>
+            <datalist id={id}>
+                { children }
             </datalist>
         </div>
     )

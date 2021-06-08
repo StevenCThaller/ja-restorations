@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import FurnitureForm from './containers/FurnitureForm';
 import AvailableNow from './containers/AvailableNow';
 import ProtectedRoute from './containers/ProtectedRoute';
+import Gallery from './containers/Gallery/Gallery';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import UserProfile from './containers/UserProfile/UserProfile';
 import { useEffect, useState } from 'react';
@@ -61,10 +62,11 @@ const App = props => {
           <Route exact path="/" component={Home} />
           <Route path="/login" component={Login} />
           <Route path="/logout" component={Logout} />
+          <Route path="/available" component={AvailableNow}/>
+          <Route path="/gallery" component={Gallery}/>
           <ProtectedRoute level={2} path="/addfurniture">
             <FurnitureForm/>
           </ProtectedRoute>
-          <Route path="/available" component={AvailableNow}/>
           <ProtectedRoute level={1} path="/account">
             <UserProfile />
           </ProtectedRoute>

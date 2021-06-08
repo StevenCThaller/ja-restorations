@@ -14,3 +14,12 @@ export const numberHandler = target => {
         })
     }
 }
+
+export const resetFurniture = () => {
+    return dispatch => {
+        dispatch({
+            type: 'furniture/reset',
+            payload: ''
+        })
+    }
+}

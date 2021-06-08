@@ -6,8 +6,6 @@ import { connect } from 'react-redux';
 const DeleteFurniture = props => {
     const { id, deleteFromDom, auth } = props;
 
-    console.log(auth);
-
     const deleteFurniture = () => {
         axios.delete(`http://localhost:5000/api/furniture/${id}/delete`, { headers: { Authorization: `Bearer ${auth.user}` } })
         .then(results => deleteFromDom(id))

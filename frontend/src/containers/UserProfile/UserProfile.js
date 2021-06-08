@@ -98,6 +98,7 @@ const UserProfile = props => {
                         <ImagesInput images={displayImages} addImages={addImages} removeImage={removeImage} />
                         <div>
                             <input type="submit" value="Update" />
+                            <input type="button" value="Cancel" onClick={ () => setEdit(e => !e) }/>
                         </div>
                     </form>
                     :

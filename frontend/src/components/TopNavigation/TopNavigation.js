@@ -15,7 +15,7 @@ const TopNavigation = () => {
                 <NavLogo/>
                 <span className={navCat}>Categories</span>
                 <NavLink className={navCat} to="/available">Shop</NavLink>
-                <span className={navCat}>Gallery</span>
+                <NavLink className={navCat} to="/gallery">Gallery</NavLink>
             </div>
             <div className={navRight}>
                 <NavSearch />

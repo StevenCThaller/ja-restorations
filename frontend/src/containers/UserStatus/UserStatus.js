@@ -10,7 +10,7 @@ import jwt from 'jsonwebtoken';
 import { setUser } from '../../actions/userActions';
 import axios from 'axios';
 import NavUser from '../../components/NavUser';
-import KebabMenu from '../KebabMenu/KebabMenu';
+import UserMenu from '../UserMenu/UserMenu';
 import profileDefault from '../../assets/images/pfpDefault.png'
 import { profilePicture, userStatus } from './UserStatus.module.css';
 
@@ -65,7 +65,7 @@ const UserStatus = props => {
             //     role={user.Role}
             //     navCat={navCat}
             // />
-            <KebabMenu/>
+            <UserMenu/>
         ) :
         (
             <div className={userStatus} onClick={handleOpen}>
