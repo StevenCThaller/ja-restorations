@@ -12,6 +12,8 @@ import TextInput from '../components/inputs/TextInput';
 import TextArea from '../components/inputs/TextArea';
 import BoxSlider from '../components/inputs/BoxSlider';
 import Price from '../components/inputs/Price';
+import Modal from 'react-bootstrap/Modal';
+import NumberInput from '../components/inputs/NumberInput';
 
 const initialErrors = {
     name: '',
@@ -22,7 +24,8 @@ const initialErrors = {
     length: '',
     width: '',
     height: '',
-    weight: ''
+    weight: '',
+    isPriceRange: false
 }
 
 const FurnitureForm = props => {
@@ -31,7 +34,6 @@ const FurnitureForm = props => {
     const [images, setImages] = useState({});
     const [types, setTypes] = useState([]);
     const [displayImages, setDisplayImages] = useState([]);
-    const [isPriceRange, setIsPriceRange] = useState(false);
     const history = useHistory();
 
     useEffect(() => {
@@ -54,7 +56,6 @@ const FurnitureForm = props => {
 
     const submitHandler = e => {
         e.preventDefault();
-        console.log(GetHeaders(auth));
         if(images.hasOwnProperty(0)) {
             submitFurniture(furniture, GetHeaders(auth))
                 .then(response => submitImages(response.data.value.results, convertFilesToFormData(images), GetHeaders(auth)))
@@ -63,15 +64,18 @@ const FurnitureForm = props => {
                     history.push('/')
                 })
                 .catch(err => {
-                    let { ...newErrors } = initialErrors;
+                    if(err['response'] !== undefined){
 
-                    for(const error in err.response.data.errors){
-                        if(newErrors.hasOwnProperty(error)){
-                            newErrors[error] = err.response.data.errors[error]
+                        let { ...newErrors } = initialErrors;
+                        
+                        for(const error in err.response.data.errors){
+                            if(newErrors.hasOwnProperty(error)){
+                                newErrors[error] = err.response.data.errors[error]
+                            }
                         }
-                    }
-                    if(newErrors != initialErrors){
-                        setErrors(newErrors);
+                        if(newErrors != initialErrors){
+                            setErrors(newErrors);
+                        }
                     }
                 });
         } else {
@@ -97,7 +101,8 @@ const FurnitureForm = props => {
         }
     }
 
-    const toTitleCase = st => st.split(' ').map( word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    
+
 
 
     return (
@@ -118,44 +123,22 @@ const FurnitureForm = props => {
                 id="types" 
                 name="type" 
                 label="Type: "
-                onChange={ textChangeHandler } 
-            >
-                {types.map((ty, i) => <option key={i} value={ toTitleCase(ty.name)}/>)}
-            </DataList>
-            <BoxSlider
-                name="isPriceRange"
-                optionOne="Fixed"
-                optionTwo="Range"
-                value={isPriceRange}
-                onChange={() => setIsPriceRange(r => !r)}
+                onChange={textChangeHandler} 
+                values={types.map(ty => ty.name)}
+
             />
-            <div className="formGroup" style={{display: 'flex'}}>
-                <Price
-                    additionalClasses='w40'
-                    name="priceFloor"
-                    label="Price: "
-                    value={furniture.priceFloor}
-                    onChange={numberChangeHandler}
-                    error={errors.priceFloor}
-                />
-                {
-                    isPriceRange ?
-                    <Price
-                        additionalClasses='w40'
-                        name="priceCeiling"
-                        label="&nbsp;&nbsp;--&nbsp;&nbsp;"
-                        value={furniture.priceCeiling}
-                        onChange={numberChangeHandler}
-                        error={errors.priceCeiling}
-                    />
-                    :
-                    ''
-                }
-            </div>
-            {/* <div>
-                <label htmlFor="priceFloor">{ !isPriceRange ? "Price: " : "Minimum Price" }</label>
-                <input type="number" name="priceFloor" onChange={numberChangeHandler} />
-            </div> */}
+            <Price
+                className="w90"
+                canBeRange={true}
+                floorName="priceFloor"
+                ceilingName="priceCeiling"
+                label={"Price: "}
+                floorValue={furniture.priceFloor}
+                ceilingValue={furniture.priceCeiling}
+                onChange={numberChangeHandler}
+                floorError={errors.priceFloor}
+                ceilingError={errors.priceCeiling}
+            />
             <div>
                 <label htmlFor="dimensions">Dimensions (LxWxH in): </label>
                 <input type="number" name="length" onChange={numberChangeHandler}/>
@@ -164,10 +147,12 @@ const FurnitureForm = props => {
                 <span> x </span>
                 <input type="number" name="width" onChange={numberChangeHandler}/>
             </div>
-            <div>
-                <label htmlFor="estimatedWeight">Estimated Weight (lbs): </label>
-                <input type="number" name="estimatedWeight" onChange={numberChangeHandler} />
-            </div>
+            <NumberInput
+                name="weight"
+                label="Estimated Weight: "
+                value={furniture.weight}
+                onChange={numberChangeHandler}
+            />
             
             <ImagesInput images={displayImages} addImages={addImages} removeImage={removeImage} multiple={true} />
         

@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-String.prototype.hashUrlCode = function() {
+const hashUrlCode = string => {
     var hash = 0, i, chr;
-    let split = this.split('.');
+    let split = string.split('.');
     if (split[0].length === 0) return hash;
     for (i = 0; i < split[0].length; i++) {
         chr   = split[0].charCodeAt(i);
@@ -19,7 +19,7 @@ export const submitImages = (id, formData, headers) => axios.post(`http://localh
 export const convertFilesToFormData = images => {
     let formData = new FormData();
     for(let i = 0; i < images.length; i++) {
-        formData.append('fileNames', images[i].name.hashUrlCode());
+        formData.append('fileNames', hashUrlCode(images[i].name));
         formData.append('formFiles', images[i]);
     }
     return formData;

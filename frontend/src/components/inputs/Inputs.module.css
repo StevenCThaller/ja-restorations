@@ -84,3 +84,7 @@ input:checked + .slider:before {
 .hasError{
     padding-top: 0px;
 }
+
+.inputLabel {
+    width: 100%;
+}

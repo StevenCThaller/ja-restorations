@@ -14,8 +14,8 @@ const TopNavigation = () => {
             <div className={navLeft}>
                 <NavLogo/>
                 <span className={navCat}>Categories</span>
-                <NavLink className={navCat} to="/available">Shop</NavLink>
-                <NavLink className={navCat} to="/gallery">Gallery</NavLink>
+                <NavLink className={navCat} activeStyle={{ color: '#FDCC39'}} to="/available">Shop</NavLink>
+                <NavLink className={navCat} activeStyle={{ color: '#FDCC39'}} to="/gallery">Gallery</NavLink>
             </div>
             <div className={navRight}>
                 <NavSearch />

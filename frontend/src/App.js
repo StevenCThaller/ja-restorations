@@ -54,12 +54,12 @@ const App = props => {
 
   return (
     <>
+    <TopNavigation />
     {
       loaded ?
       <>
-        <TopNavigation />
         <Switch>
-          <Route exact path="/" component={Home} />
+          <Route exact path="/" component={Home}/>
           <Route path="/login" component={Login} />
           <Route path="/logout" component={Logout} />
           <Route path="/available" component={AvailableNow}/>

@@ -81,7 +81,7 @@ const UserStatus = props => {
                     <Modal.Header closeButton>
                         <Modal.Title>Log In</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>
+                    <Modal.Body className="flex-center column">
                         <p>Please log in with one of the following services.</p>
                         <GoogleLogin 
                             className="yellow-button"

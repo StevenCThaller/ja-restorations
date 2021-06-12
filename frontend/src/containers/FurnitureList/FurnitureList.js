@@ -1,14 +1,12 @@
 import React from 'react'
-import DeleteFurniture from '../DeleteFurniture';
-import SellFurniture from '../SellFurniture';
-import UnlikeFurniture from '../UnlikeFurniture';
-import LikeFurniture from '../LikeFurniture';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { fList } from './FurnitureList.module.css';
+import FurnitureGlance from '../../components/FurnitureGlance';
 
 const FurnitureList = props => {
-    const { user, furnitureList, setFurnitureList } = props;
+    const { furnitureList, setFurnitureList, user, sellFurniture } = props;
+
     const deleteFromDom = id => {
         setFurnitureList(furnitureList.filter(f => f.furnitureId !== id));
     }
@@ -29,27 +27,41 @@ const FurnitureList = props => {
         <main className={fList}>
             {
                 furnitureList.map((item, i) => 
-                    <div key={i}>
-                        <h4>{item.name}</h4>
-                        <p>{item.description}</p>
-                        <p>Dimensions (LxWxH): {item.length} x {item.width} x {item.height}</p>
-                        <p>Price{item.priceCeiling ? ` range: \$${item.priceFloor} - \$${item.priceCeiling}`: `: \$${item.priceFloor}` } </p>
-                        {
-                            item.images.map((img, j) => <img className="furniture-image" key={j} src={img.url} />)
-                        }
-                        {
-                            user.role > 1 ?
-                            <>
-                            <DeleteFurniture id={item.furnitureId} deleteFromDom={deleteFromDom}/> 
-                            <SellFurniture id={item.furnitureId} deleteFromDom={deleteFromDom} />
-                            </>
-                            : 
-                            item.likedByUsers.find(u => u.userId == user.userId) ?
-                            <UnlikeFurniture furnitureLike={item.likedByUsers.find(l => l.userId == user.userId)} removeLike={() => removeLike(i)}/>
-                            :
-                            <LikeFurniture furnitureId={item.furnitureId} addLike={newLike => addLike(i, newLike)}/>
-                        }
-                    </div>
+                    <FurnitureGlance
+                        key={i}
+                        index={i}
+                        furniture={item}
+                        removeLike={removeLike}
+                        addLike={addLike}
+                        deleteFromDom={deleteFromDom}
+                        soldItem={sellFurniture ? sellFurniture : deleteFromDom}
+                    />
+                    // <div key={i}>
+                    //     <h4>{item.name}</h4>
+                    //     <p>{item.description}</p>
+                    //     <p>Dimensions (LxWxH): {item.length} x {item.width} x {item.height}</p>
+                    //     <p>Price{item.priceCeiling ? ` range: \$${item.priceFloor} - \$${item.priceCeiling}`: `: \$${item.priceFloor}` } </p>
+                    //     {
+                    //         item.images.map((img, j) => <img className="furniture-image" key={j} src={img.url} />)
+                    //     }
+                    //     {
+                    //         user.role > 1 ?
+                    //         <>
+                    //         <DeleteFurniture id={item.furnitureId} deleteFromDom={deleteFromDom}/> 
+                    //         {
+                    //             !item.sold ?
+                    //             <SellFurniture id={item.furnitureId} deleteFromDom={deleteFromDom} />
+                    //             :
+                    //             ''
+                    //         }
+                    //         </>
+                    //         : 
+                    //         item.likedByUsers.find(u => u.userId == user.userId) ?
+                    //         <UnlikeFurniture furnitureLike={item.likedByUsers.find(l => l.userId == user.userId)} removeLike={() => removeLike(i)}/>
+                    //         :
+                    //         <LikeFurniture furnitureId={item.furnitureId} addLike={newLike => addLike(i, newLike)}/>
+                    //     }
+                    // </div>
                 )
             }
         </main>

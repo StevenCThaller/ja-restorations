@@ -14,7 +14,7 @@ namespace backend.Services
         Task<FurnitureLike> AddLike(FurnitureLikeForm furnitureLikeForm);
         Task<bool> RemoveLike(int furnitureLikeId);
 
-        Task<bool> MarkAsSold(SaleForm saleForm);
+        Task<Sale> MarkAsSold(SaleForm saleForm);
     }
 
     public class FurnitureService : IFurnitureService
@@ -96,18 +96,19 @@ namespace backend.Services
             }
         }
 
-        public async Task<bool> MarkAsSold(SaleForm saleForm)
+        public async Task<Sale> MarkAsSold(SaleForm saleForm)
         {
             await Task.Delay(0);
             try
             {
-                _context.Add(new Sale(saleForm));
+                Sale toAdd = new Sale(saleForm);
+                _context.Add(toAdd);
                 _context.SaveChanges();
-                return true;
+                return toAdd;
             }
             catch
             {
-                return false;
+                return null;
             }
         }
     }

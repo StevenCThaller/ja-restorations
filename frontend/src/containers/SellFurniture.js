@@ -1,4 +1,4 @@
-import React from 'react'
+import {useEffect} from 'react'
 import Modal from 'react-bootstrap/Modal';
 import DateField from '../components/inputs/DateField';
 import Price from '../components/inputs/Price';
@@ -13,14 +13,16 @@ class initialSale {
     constructor(id){
         this.furnitureId = id;
         this.finalPrice = 0.00;
-        this.dateSold = Date.now();
+        this.dateSold = '';
     }
 }
 
 const SellFurniture = props => {
-    const { id, deleteFromDom, auth } = props;
+    const { id, soldItem, auth } = props;
     const [show, setShow] = useState(false);
     const [sale, setSale] = useState(() => new initialSale(id))
+
+    useEffect(() => () => setSale({}), [])
 
     const handleClose = () => setShow(false);
     const handleOpen = () => setShow(true);
@@ -28,9 +30,9 @@ const SellFurniture = props => {
     const sellFurniture = e => {
         e.preventDefault();
         axios.patch(`http://localhost:5000/api/furniture/sell`, sale, GetHeaders(auth))
-            .then(results => {
-                    console.log(results);
-                    deleteFromDom(id);
+            .then(response => {
+                    console.log(response);
+                    soldItem(id, response.data.value.results);
                     handleClose();
             })
             .catch(err => console.log(err));
@@ -47,8 +49,6 @@ const SellFurniture = props => {
 
     const priceHandler = e => {
         const { name, value } = e.target;
-        console.log(value);
-        console.log(parseFloat(value));
         setSale({
             ...sale,
             [name]: parseFloat(value)

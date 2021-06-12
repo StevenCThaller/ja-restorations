@@ -29,13 +29,19 @@ main {
   background-color: #26252a;
 }
 
-.my-modal * {
+.my-modal{
   /* color: #26252a; */
-  text-align: center;
+  display: flex;
+  align-items: center;
 }
+
+/* .my-modal form * {
+  text-align: left !important;
+} */
 
 .yellow-button {
   background-color:#FDCC39 !important;
+  align-self: center;
 }
 
 .yellow-button * {
@@ -144,7 +150,61 @@ body {
 .rc-menu * {
   color: #26252a;
 }
-
+.w100 {
+  width: 100%;
+}
+.w90 {
+  width: 90%;
+}
+.w80 {
+  width: 80%;
+}
+.w70 {
+  width: 70%;
+}
+.w60 {
+  width: 60%;
+}
+.w50 {
+  width: 50%;
+}
 .w40 {
   width: 40%;
+}
+.w30 {
+  width: 30%;
+}
+.w20 {
+  width: 20%;
+}
+.w10 {
+  width: 10%;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+}
+
+.column {
+  flex-direction: column;
+}
+
+.input-range label {
+  margin-bottom: 0px;
+  text-align: left;
+}
+
+.align-start {
+  align-self: flex-start;
+}
+
+input[type=currency] {
+  max-width: 45%;
 }

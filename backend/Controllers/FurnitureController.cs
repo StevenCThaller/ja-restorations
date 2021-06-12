@@ -184,9 +184,14 @@ namespace backend.Controllers
                     return Unauthorized(Json(new { message = "unauthorized", results = "You are unauthorized to access this resource"}));
                 }
 
-                await _furnitureService.MarkAsSold(saleForm);
+                Sale justAdded = await _furnitureService.MarkAsSold(saleForm);
 
-                return Ok(Json(new { message = "success", results = true }));
+                if(justAdded == null) 
+                {
+                    return BadRequest(Json(new { message = "error", results = "Unable to add" }));
+                }
+                
+                return Ok(Json(new { message = "success", results = justAdded }));
             }
             catch(Exception ex)
             {
