@@ -6,7 +6,7 @@ const Gallery = () => {
     const [furnitureList, setFurnitureList] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/furniture')
+        axios.get('http://localhost:5000/api/images/gallery')
             .then(response => {
                 setFurnitureList(response.data.value.results)
             })

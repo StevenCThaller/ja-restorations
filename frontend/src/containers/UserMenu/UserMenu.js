@@ -8,10 +8,12 @@ import { userStatus, profilePicture, loggedIn } from '../UserStatus/UserStatus.m
 import profileDefault from '../../assets/images/pfpDefault.png';
 import NewFurniture from '../../components/NewFurniture'
 import FurnitureForm from '../../containers/FurnitureForm';
+import GalleryImageForm from '../../containers/GalleryImageForm';
 
 const UserMenu = props => {
     const history = useHistory();
-    const [showCreate, setShowCreate] = useState(false);
+    const [showCreateFurniture, setShowCreateFurniture] = useState(false);
+    const [showCreateGallery, setShowCreateGallery] = useState(false);
     const { user } = props;
     const { path, url } = useRouteMatch();
     // useEffect(() => {
@@ -38,7 +40,8 @@ const UserMenu = props => {
                 {
                     user.role > 1 ?
                     <SubMenu className="right-side-submenu" label={ user.role == 2 ? "Employee" : "Admin" } direction="left">
-                        <MenuItem onClick={() => setShowCreate(s => !s)}>Create Furniture</MenuItem>
+                        <MenuItem onClick={() => setShowCreateFurniture(s => !s)}>Create Furniture</MenuItem>
+                        <MenuItem onClick={() => setShowCreateGallery(s => !s)}>Add Gallery Image</MenuItem>
                     </SubMenu>
                     :
                     <SubMenu className="right-side-submenu" label="User">
@@ -53,8 +56,14 @@ const UserMenu = props => {
             <NewFurniture
                 title="Create New Furniture"
                 body={<FurnitureForm />}
-                show={showCreate}
-                setShow={setShowCreate}
+                show={showCreateFurniture}
+                setShow={setShowCreateFurniture}
+            />
+            <NewFurniture 
+                title="Upload Images to Gallery"
+                body={<GalleryImageForm />}
+                show={showCreateGallery}
+                setShow={setShowCreateGallery}
             />
         </>
     )

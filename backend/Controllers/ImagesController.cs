@@ -81,6 +81,21 @@ namespace backend.Controllers
         }
 
 
+        [AllowAnonymous]
+        [HttpGet("gallery/{count}")]
+        public async Task<IActionResult> GetGalleryImages(int count)
+        {
+            try 
+            {
+                IEnumerable<S3Image> galleryImages = await _imageService.GetXMostRecentGalleryImages(count);
+                return Ok(Json(new { message = "success", results = galleryImages }));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(Json(new { message = "error", results = ex.Message }));
+            }
+        }
+
 
         [HttpPost("furniture/{furnitureId}")]
         public async Task<IActionResult> UploadFurnitureImages(int furnitureId, [FromForm] FileModel files)
@@ -134,7 +149,55 @@ namespace backend.Controllers
             {
                 return BadRequest(Json(new { message = "error", data = ex.Message }));
             }
-            
+        }
+
+        [HttpPost("gallery")]
+        public async Task<IActionResult> UploadGalleryImage([FromForm] FileModel files)
+        {
+            try
+            {
+                if(!await _authService.AuthorizeByHeaders(Request))
+                {
+                    return Unauthorized(Json(new { message = "unauthorized", results = "You are unauthorized to access this resource"}));
+                }
+
+                List<S3Image> images = new List<S3Image>();
+                for(int i = 0; i < files.FormFiles.Count; i++)
+                {
+                    var file = files.FormFiles[i];
+                    string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/s3", files.FileNames[i]);
+
+                    using (Stream stream = new FileStream(path, FileMode.Create))
+                    {
+                        file.CopyTo(stream);
+                        TransferUtility utility = new TransferUtility(client);
+                        TransferUtilityUploadRequest request = new TransferUtilityUploadRequest();
+
+                        request.BucketName = $"{AppSettings.appSettings.BucketName}/{AppSettings.appSettings.GalleryDir}";
+                        request.Key = files.FileNames[i];
+                        request.InputStream = stream;
+                        utility.Upload(request);
+                        FileInfo toDelete = new FileInfo(path);
+                        toDelete.Delete();
+                    }
+                    
+                    S3Image img = new S3Image()
+                    {
+                        url = $"https://{AppSettings.appSettings.BucketName}.s3.{AppSettings.appSettings.Region}.amazonaws.com/{AppSettings.appSettings.GalleryDir}/{files.FileNames[i]}"
+                    };
+                    images.Add(img);
+                    _context.Add(img);
+                }
+
+                _context.SaveChanges();
+
+                AssociateImagesToGallery(images);
+                return Ok(Json(new { message = "success", data = images }));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(Json(new { message = "error", data = ex.Message }));
+            }
         }
 
         [HttpPost("users/{userId}")]
@@ -192,6 +255,22 @@ namespace backend.Controllers
 
             _context.SaveChanges();
         }
+
+        [NonAction]
+        private void AssociateImagesToGallery(List<S3Image> images)
+        {
+            foreach(S3Image img in images)
+            {
+                GalleryImage newGal = new GalleryImage()
+                {
+                    s3ImageId = img.s3ImageId
+                };
+                _context.Add(newGal);
+            }
+
+            _context.SaveChanges();
+        }
+
         
     }
 }

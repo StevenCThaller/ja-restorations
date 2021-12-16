@@ -15,6 +15,7 @@ namespace backend.Services
     {
         Task<IEnumerable<S3Image>> GetAllImages();
         Task<IEnumerable<S3Image>> GetXMostRecentFurnitureImages(int count);
+        Task<IEnumerable<S3Image>> GetXMostRecentGalleryImages(int count);
     }
     public class ImageService : IImageService
     {
@@ -39,6 +40,16 @@ namespace backend.Services
                 .Where(f => f.images.Count > 0)
                 .Take(count)
                 .Select(f => f.images.First().s3Image);
+        }
+
+        public async Task<IEnumerable<S3Image>> GetXMostRecentGalleryImages(int count)
+        {
+            await Task.Delay(0);
+            return _context.GalleryImages
+                .Include(g => g.s3Image)
+                .OrderByDescending(g => g.createdAt)
+                .Take(count)
+                .Select(g => g.s3Image);
         }
         public async static void DeleteImages(IEnumerable<S3Image> images)
         {

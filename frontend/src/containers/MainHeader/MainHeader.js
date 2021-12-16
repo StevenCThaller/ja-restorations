@@ -9,7 +9,7 @@ const MainHeader = () => {
     const [index, setIndex] = useState(0);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/images/furniture/5')
+        axios.get('http://localhost:5000/api/images/gallery/3')
             .then(response => {
                 // console.log(response);
                 setImages(response.data.value.results.filter(i => i !== null));
@@ -24,6 +24,8 @@ const MainHeader = () => {
 
     if(!loaded) {
         return <p>Loading...</p>
+    } else if(images.length === 0) {
+        return <></>;
     }
 
     return (

@@ -17,6 +17,7 @@ import { login, logout } from './actions/authActions';
 import { clearUser, setUser } from './actions/userActions';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
+import GalleryImageForm from './containers/GalleryImageForm';
 
 
 const App = props => {
@@ -66,6 +67,9 @@ const App = props => {
           <Route path="/gallery" component={Gallery}/>
           <ProtectedRoute level={2} path="/addfurniture">
             <FurnitureForm/>
+          </ProtectedRoute>
+          <ProtectedRoute level={2} path="/addgallery">
+            <GalleryImageForm/>
           </ProtectedRoute>
           <ProtectedRoute level={1} path="/account">
             <UserProfile />
